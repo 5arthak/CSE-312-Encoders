@@ -1,0 +1,48 @@
+Arguments: 
+  /usr/local/bin/node /opt/homebrew/bin/yarn create react-app my-app
+
+PATH: 
+  /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/Users/sarthakagarwal/flutter/bin://Users/sarthakagarwal/Desktop/flutter/bin
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  16.14.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  SyntaxError: /Users/sarthakagarwal/Desktop/CSE-312-Encoders/package.json: Unexpected string in JSON at position 323
+      at JSON.parse (<anonymous>)
+      at /opt/homebrew/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/opt/homebrew/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /opt/homebrew/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "encoders",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "body-parser": "^1.20.0",
+      "express": "^4.17.3",
+      "pug": "^3.0.2"
+    }
+    "proxy": "http://localhost:4000"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
