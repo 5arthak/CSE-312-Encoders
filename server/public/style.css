@@ -1,0 +1,9 @@
+body {
+    background-color: slategrey;
+    color: white;
+}
+
+.post_images{
+    width: 20%;
+    height: auto;
+}
