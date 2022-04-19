@@ -1,0 +1,11 @@
+This is just a test file!
+
+git checkout 
+    - move to a branch
+git branch 
+    - create a new branch
+git merge 'branch'
+    - merge current branch with new branch
+    - changes current branch
+git status
+    - make sure ur in ur own branch
