@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encoder's List</title>
+    <title>CSE312 Sample Front End</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet"> 
@@ -14,7 +14,7 @@
 <body onload="welcome();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo">Encoder's List</div>
+        <div class="logo">Your Grocery List</div>
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -25,21 +25,30 @@
         <li><a href="./index.html">Home</a></li>
         <li><a href="./addReceipt.html">Add Receipt</a></li>
         <li><a href="./chat.html">Support</a></li>
-        <li><a href="/login.html">Logout</a></li>
+        <li><a href="./login.html">Logout</a></li>
         </div>
         </ul>
     </nav>
     <a href="./createList.html">
     <button class="button"> + New Grocery List</button></a>
-    <h1 class = "header">Saved Lists:</h1>
-
-    <p id="paragraph">
-        Click on the lists to expand / view:
-    </p>
-    <br>
-    <p>
+    <h4 class="header">Use text field to send message:</h4>
+    <label for="chat-comment">Chat: </label>
+    <input id="chat-comment" type="text" name="comment">
+    
+    <button onclick="sendMessage()">Send</button>
+    
+    <div id="chat"></div>
+    
+    <br/>
+    <button onclick="startVideo()">Start My Video</button>
+    <br/>
+    <button onclick="connectWebRTC()">Start Video Chat</button>
+    <br/>
+    
+    <video id="myVideo" autoplay muted></video>
+    <br/>
+    <video id="otherVideo" autoplay></video>
 </div>
 <script src="functions.js"></script>
-<br>
 </body>
 </html>
