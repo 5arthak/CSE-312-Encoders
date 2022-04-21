@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE312 Sample Front End</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body onload="welcome();">
+<div class="responsiveBorderContainer1">
+    <nav class="navbar">
+        <div class="logo">Your Grocery List</div>
+        <!-- NAVIGATION MENU -->
+        <ul class="nav-links">
+        <!-- USING CHECKBOX HACK -->
+        <input type="checkbox" id="checkbox_toggle" />
+        <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+        <!-- NAVIGATION MENUS -->
+        <div class="menu">
+        <li><a href="./index.html">Home</a></li>
+        <li><a href="./addReceipt.html">Add Receipt</a></li>
+        <li><a href="./chat.html">Support</a></li>
+        <li><a href="./login.html">Logout</a></li>
+        </div>
+        </ul>
+    </nav>
+    <h1></h1>
+    <!-- "/image-upload" changed to /newList-upload--> 
+    <div class="addDiv">
+    <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
+        <br>
+        <p>Add Item:</p>
+        <input value="{{token}}" name="xsrf_token" hidden>
+        <label for="newList-form-comment">List Name:</label>
+        <input type ="text" id="newList-form-name" name="name" cols="40" rows="1"></input><br><br>
+        <label for="newList-form-comment">Item Name:</label>
+        <input type ="text" id="newList-form-item" name="item" cols="40" rows="3"></input><br><br>
+        <label for="newList-form-quantity">Item Quantity:</label>
+        <center><select>
+            <option value=”0”>0</option>
+            <option value=”1”>1</option>
+            <option value=”2”>2</option>
+            <option value=”3”>4</option>
+            <option value=”4”>5</option>
+            <option value=”5”>6</option>
+            <option value=”6”>7</option>
+            <option value=”7”>8</option>
+            <option value=”8”>9</option>
+            <option value=”9”>10</option>
+            <option value=”10”>10+</option>
+            <option value=”20+”>20+</option>
+            <option value=”50+”>50+</option>
+            <option value=”100+”>100+</option>
+        </select>
+    </center>
+    <br/><br>
+        <input class="button" type="submit" value="Add Item">
+        <br><br>
+    </form></div>
+    <div class = "currentListDiv">
+        <p class = "list"> Added List Items: </p>
+    </div>
+    <br/>
+   <br> 
+   <center><button class = "button" onclick="sendMessage()">Save List</button></center>
+    
+    <div id="chat"></div>
+    </div>
+<script src="functions.js"></script>
+</body>
+</html>
