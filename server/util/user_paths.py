@@ -12,7 +12,13 @@ def add_paths(router):
     router.add_route(Route('PUT', '/users/.', update))
     router.add_route(Route('DELETE', '/users/.', delete))
 
+    router.add_route(Route("POST", "newList-upload", upload_list))
 
+
+def upload_list(request, handler):
+    
+
+    return
 def create(request, handler):
     if len(request.body) == 0:
         response = generate_response(b"Error: No content", "text/plain; charset=utf-8", "404 Not Found")

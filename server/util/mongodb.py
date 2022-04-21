@@ -10,6 +10,14 @@ users_collection = db["users"]
 comments_collection = db["comments"]
 chats_collection = db["chats"]
 
+grocery_items_collection = db["grocery_items"]
+
+def add_item(list_name: str, item_name: str, quantity: int):
+
+
+    return
+
+
 
 def create(user_dict): 
     user_dict['id'] = get_next_id()
@@ -77,3 +85,5 @@ def insert_chat(chat):
 def list_all_chats():
     all_chats = chats_collection.find({}, {"_id": 0})
     return list(all_chats)
+
+

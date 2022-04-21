@@ -85,7 +85,7 @@ def websocket(request, handler):
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
                         payload_decoded.pop('messageType')
-                        db.insert_chat(payload_decoded)
+                        # db.insert_chat(payload_decoded)
 
                         outgoing_bytes = [129]
                         if outgoing_payload_len < 126:
@@ -151,7 +151,7 @@ def send_chat(payload_decoded, username):
     outgoing_payload = json.dumps(payload_decoded)
     outgoing_payload_len = len(outgoing_payload)
     payload_decoded.pop('messageType')
-    db.insert_chat(payload_decoded)
+    # db.insert_chat(payload_decoded)
     print(payload_decoded)
     sys.stdout.flush()
     sys.stderr.flush()
@@ -197,7 +197,7 @@ def test_accept():
 def chat_history(_, handler):
     history = [{"username": "user879", "comment": "hi 🚗"}, 
                {"username": "user222", "comment": "222"}]
-    history = db.list_all_chats()
+    # history = db.list_all_chats()
     print(history)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)
