@@ -10,13 +10,39 @@ users_collection = db["users"]
 comments_collection = db["comments"]
 chats_collection = db["chats"]
 
+grocery_items_id_collection = db["grocery_id"]
 grocery_items_collection = db["grocery_items"]
 
-def add_item(list_name: str, item_name: str, quantity: int):
+def add_item(list_name: str, item_name: str, quantity: str):
+    
+    name = {"list_name": list_name}
+    item = {"item_name": item_name,
+            "quantity": int(quantity)}
 
+    # item["id"] = get_next_groceryid(list_name)
 
-    return
+    grocery_list = grocery_items_collection.find_one(name)
 
+    if grocery_list:
+        grocery_list["items"].append(item)
+        
+        grocery_items_collection.update_one(name, {'$set': {"items": grocery_list["items"]}})
+        
+    else:
+        name["items"] = [item]
+        grocery_items_collection.insert_one(name)
+
+    return grocery_items_collection.find_one(name)
+
+def get_next_groceryid(list_name: str):
+    id_object = users_id_collection.find_one({"name": list_name})
+    if id_object:
+        next_id = int(id_object["last_id"]) + 1
+        users_id_collection.update_one({"name": list_name}, {'$set': {'last_id': next_id}})
+        return next_id
+    else:
+        users_id_collection.insert_one({"name": list_name, "last_id": 1})
+        return 1
 
 
 def create(user_dict): 
@@ -33,6 +59,7 @@ def get_next_id():
     else:
         users_id_collection.insert_one({'last_id': 1})
         return 1 
+
 
 def list_all():
     all_users = users_collection.find({}, {"_id": 0})
