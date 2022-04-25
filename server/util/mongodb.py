@@ -15,9 +15,11 @@ grocery_items_collection = db["grocery_items"]
 
 def add_item(list_name: str, item_name: str, quantity: str):
     
+    quantity_num = int(quantity) if quantity != "" else 0
+
     name = {"list_name": list_name}
     item = {"item_name": item_name,
-            "quantity": int(quantity)}
+            "quantity": quantity_num}
 
     # item["id"] = get_next_groceryid(list_name)
 

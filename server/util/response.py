@@ -10,7 +10,7 @@ def generate_response(body:bytes, content_type:str = 'text/plain; charset=utf-8'
     response += b"\r\n" + body
     return response
 
-def redirect_response(redirect: str, status:str = '301 Moved Permanently'):
+def redirect_response(redirect: str, status: str = '301 Moved Permanently'):
     response = ("HTTP/1.1 " + status + "\r\n").encode()
     response += b'X-Content-Type-Options: nosniff\r\n'
     response += ("Location: " + redirect + "\r\n\r\n").encode()

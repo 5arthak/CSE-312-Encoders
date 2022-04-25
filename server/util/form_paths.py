@@ -13,37 +13,64 @@ from util.security import secure_html
 
 
 def add_paths(router):
-    router.add_route(Route("POST", "/image-upload", image_upload))
+    # router.add_route(Route("POST", "/image-upload", image_upload))
+
+    router.add_route(Route("POST", "/newList-upload", upload_list))
 
 
-def image_upload(request, handler):
+def upload_list(request, handler):
     content_type = request.headers.get('Content-Type')
     prefix = 'multipart/form-data; boundary='
     boundary = "--" + content_type[len(prefix):]
-    if not form_parser(request.body, boundary.encode()):
+
+    if not list_parser(request.body, boundary.encode()):
         response = generate_response(b"Requested rejected", "text/plain; charset=utf-8", "403 Forbidden")
         handler.request.sendall(response)
         return
-    response = redirect_response("/") 
+    response = redirect_response("/createList.html") 
     handler.request.sendall(response)
 
-def form_parser(request, boundary):
+
+
+# def image_upload(request, handler):
+#     content_type = request.headers.get('Content-Type')
+#     prefix = 'multipart/form-data; boundary='
+#     boundary = "--" + content_type[len(prefix):]
+#     if not form_parser(request.body, boundary.encode()):
+#         response = generate_response(b"Requested rejected", "text/plain; charset=utf-8", "403 Forbidden")
+#         handler.request.sendall(response)
+#         return
+#     response = redirect_response("/") 
+#     handler.request.sendall(response)
+
+def list_parser(request, boundary): # "item", "xsrf_token", "name", "quantity"
     content = request.split(boundary)
-    comment = {}
+    grocery_list = {}
     for x in range(1, len(content)-1):
         raw_header = (content[x][2:]).split(b'\r\n\r\n')
         header = (parse_headers(raw_header[0]))
         name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
         body = raw_header[1]
-        if name == '"comment"':
-            comment["comment"] = secure_html(body.decode())
-        if name == '"upload"':
-            comment["img_name"] = parse_image(body)
-        if name == '"xsrf_token"':
+        # print("name is:", name, flush=True)
+        # print("body is:", body, flush=True)
+        if name == '"name"':
+            grocery_list["name"] = secure_html(body.decode()).strip()
+        elif name == '"item"':
+            grocery_list["item"] = secure_html(body.decode()).strip()
+        elif name == '"quantity"':
+            grocery_list["quantity"] = secure_html(body.decode()).strip()
+
+        elif name == "xsrf_token":
             token = body.decode().split('\r\n')[0]
             if token not in tokens:
                 return False
-    db.insert_comment(comment)
+
+    list_name = grocery_list.get("name","")
+    item_name = grocery_list.get("item","")
+    quantity = grocery_list.get("quantity","0")
+    # print(list_name,item_name,quantity)
+    
+    # db.add_item(list_name, item_name, quantity)
     return True
             
 
