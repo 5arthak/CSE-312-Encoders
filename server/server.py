@@ -3,9 +3,10 @@ import sys
 
 from util.router import Router
 from util.request import Request
-from util.user_paths import add_paths
+# from util.user_paths import add_paths
 from util.static_paths import add_paths as other_paths
 from util.form_paths import add_paths as form_paths
+from util.login_paths import add_paths as login_paths
 import util.websockets as ws
 
 
@@ -16,7 +17,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):
         self.router = Router()
         form_paths(self.router)
-        add_paths(self.router)
+        login_paths(self.router)
+        # add_paths(self.router)
         ws.add_paths(self.router)
         other_paths(self.router)
         super().__init__(request, client_address, server)
@@ -29,7 +31,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if len(received_data) == 0:
                 return
             print("\n- - - received data - - -")
-            print(received_data)
+            # print(received_data)
             print("- - - end of data - - -")
             if len(all_data) == 0:
                 request = Request(received_data)
@@ -39,7 +41,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
 
             else: all_data += received_data
 
-        # print(header)
+        print(header)
         self.router.handle_request(Request(header + b'\r\n\r\n' + all_data), self)
 
         # For docker, prints the buffer

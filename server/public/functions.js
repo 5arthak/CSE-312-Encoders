@@ -115,5 +115,5 @@ function welcome() {
     get_chat_history()
 
     // use this line to start your video without having to click a button. Helpful for debugging
-    startVideo();
+    // startVideo();
 }

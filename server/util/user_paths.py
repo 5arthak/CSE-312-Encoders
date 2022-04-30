@@ -1,7 +1,7 @@
 import json
 
 import util.mongodb as db
-from util.response import generate_response, redirect_response
+from util.response import generate_response
 from util.router import Route
 
 

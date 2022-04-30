@@ -18,14 +18,14 @@
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
-        <input type="checkbox" id="checkbox_toggle" />
-        <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+        <!-- <input type="checkbox" id="checkbox_toggle" />
+        <label for="checkbox_toggle" class="hamburger">&#9776;</label> -->
         </ul>
     </nav>
     <h2 class="header">Login form:</h2>
     <center>
         <div class="register">
-        <form action="/registration-form" id="register-form" method="post" enctype="multipart/form-data">
+        <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="email">Email: </label><br>
             &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="email" name="email" placeholder = "Enter Email" type="text" required>
@@ -40,7 +40,7 @@
     </center>
     <br/>
    <br> 
-   <center><a href = "./register.html"><button class = "button" onclick="sendMessage()">New User? Register!</button></a></center>
+   <center><a href = "/register"><button class = "button" onclick="sendMessage()">New User? Register!</button></a></center>
     
     <div id="chat"></div>
     </div>

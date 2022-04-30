@@ -1,20 +1,15 @@
-# import form_parser as fp
 import random
-from util.response import redirect_response
-from util.response import generate_response
+from util.response import redirect_response, generate_response
 
 from util.router import Route
 import util.mongodb as db
-from util.tokens import tokens
 from util.security import secure_html
-
 
 # from util.request import Request
 
 
 def add_paths(router):
     # router.add_route(Route("POST", "/image-upload", image_upload))
-
     router.add_route(Route("POST", "/newList-upload", upload_list))
 
 
@@ -43,7 +38,7 @@ def upload_list(request, handler):
 #     response = redirect_response("/") 
 #     handler.request.sendall(response)
 
-def list_parser(request, boundary): # "item", "xsrf_token", "name", "quantity"
+def list_parser(request, boundary): # "item", "name", "quantity"
     content = request.split(boundary)
     grocery_list = {}
     for x in range(1, len(content)-1):
@@ -51,26 +46,16 @@ def list_parser(request, boundary): # "item", "xsrf_token", "name", "quantity"
         header = (parse_headers(raw_header[0]))
         name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
         body = raw_header[1]
-        # print("name is:", name, flush=True)
-        # print("body is:", body, flush=True)
         if name == '"name"':
             grocery_list["name"] = secure_html(body.decode()).strip()
         elif name == '"item"':
             grocery_list["item"] = secure_html(body.decode()).strip()
         elif name == '"quantity"':
             grocery_list["quantity"] = secure_html(body.decode()).strip()
-
-        elif name == "xsrf_token":
-            token = body.decode().split('\r\n')[0]
-            if token not in tokens:
-                return False
-
     list_name = grocery_list.get("name","")
     item_name = grocery_list.get("item","")
     quantity = grocery_list.get("quantity","0")
-    # print(list_name,item_name,quantity)
-    
-    # db.add_item(list_name, item_name, quantity)
+    db.add_item(list_name, item_name, quantity)
     return True
             
 
@@ -88,11 +73,3 @@ def parse_image(image_bytes):
     with open("public/image/" + img_name, "wb") as output_file:
         output_file.write(image_bytes)
     return img_name
-  
-
-
-# Hosting files - security
-# remove all / characters 
-# no GET /image/~.ssh/id_rsa
-
-# Turn off MIME type sniffing

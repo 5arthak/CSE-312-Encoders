@@ -9,7 +9,6 @@ from server import MyTCPHandler
 from util.router import Route
 from util.security import secure_html
 import util.mongodb as db
-import sys
 
 
 def add_paths(router):
@@ -37,8 +36,6 @@ def websocket(request, handler):
     elif MyTCPHandler.ws_other.get(1) == None:
         MyTCPHandler.ws_other[1] = handler
         other_index = 0
-    print(MyTCPHandler.ws_other)
-    print(MyTCPHandler.ws_connections)
     while True:
         ws_frame_raw = handler.request.recv(1024)
         try:
@@ -68,7 +65,6 @@ def websocket(request, handler):
                     payload = ws_frame_raw[masking_index+4:]
                     
                     while ws_length > len(payload):
-                        print(ws_length, len(payload))
                         more_ws_frame_raw = handler.request.recv(1024)
                         payload += more_ws_frame_raw[:]
                     
@@ -123,7 +119,6 @@ def websocket(request, handler):
 
                         other_tcp = MyTCPHandler.ws_other[other_index]
                         other_tcp.request.sendall(outgoing_encoded)
-
         except:
             pass
     
@@ -138,7 +133,6 @@ def to_bin(dec):
 def bin_to_int(bin, bytes):
     ints = []
     for x in range(8, len(bin)+1, 8):
-      print(x)
       ints.append(int(bin[x-8:x], 2))
     while len(ints) != bytes:
       ints.insert(0, 0)
@@ -151,10 +145,7 @@ def send_chat(payload_decoded, username):
     outgoing_payload = json.dumps(payload_decoded)
     outgoing_payload_len = len(outgoing_payload)
     payload_decoded.pop('messageType')
-    # db.insert_chat(payload_decoded)
-    print(payload_decoded)
-    sys.stdout.flush()
-    sys.stderr.flush()
+    db.insert_chat(payload_decoded)
 
     outgoing_bytes = [129]
     if outgoing_payload_len < 126:
@@ -174,9 +165,7 @@ def send_chat(payload_decoded, username):
     for char in outgoing_payload:
         utf = ord(char)
         outgoing_bytes.append(utf)
-    print(len(outgoing_bytes))
     outgoing_encoded = bytes(outgoing_bytes)
-    print("chat", outgoing_encoded)
 
 
 def compute_accept(websocket_key):
@@ -198,6 +187,5 @@ def chat_history(_, handler):
     history = [{"username": "user879", "comment": "hi 🚗"}, 
                {"username": "user222", "comment": "222"}]
     # history = db.list_all_chats()
-    print(history)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

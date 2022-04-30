@@ -44,7 +44,6 @@
     <img src="image/{{image_filename}}" alt="It's a {{image_name}}" class="my_image"/>
     
     <form action="/image-upload" id="image-form" method="post" enctype="multipart/form-data">
-        <input value="{{token}}" name="xsrf_token" hidden>
         <label for="image-form-comment">Comment: </label>
         <textarea id="image-form-comment" name="comment" cols="40" rows="6"></textarea>
         <br/>

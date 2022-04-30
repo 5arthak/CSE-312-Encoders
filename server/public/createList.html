@@ -22,10 +22,10 @@
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-        <li><a href="./index.html">Home</a></li>
-        <li><a href="./addReceipt.html">Add Receipt</a></li>
-        <li><a href="./chat.html">Support</a></li>
-        <li><a href="./login.html">Logout</a></li>
+        <li><a href="/index">Home</a></li>
+        <li><a href="/addReceipt">Add Receipt</a></li>
+        <li><a href="/chat">Support</a></li>
+        <li><a href="/logout">Logout</a></li>
         </div>
         </ul>
     </nav>
@@ -35,7 +35,6 @@
     <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
         <br>
         <p>Add Item:</p>
-        <input value="{{token}}" name="xsrf_token" hidden>
         <label for="newList-form-comment">List Name:</label>
         <input type ="text" id="newList-form-name" name="name" cols="40" rows="1"></input><br><br>
         <label for="newList-form-comment">Item Name:</label>
