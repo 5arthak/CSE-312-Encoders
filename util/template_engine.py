@@ -1,4 +1,3 @@
-
 def render_template(html_filename, data):
     with open(html_filename) as html_file:
         template = html_file.read()
@@ -13,6 +12,7 @@ def replace_placeholders(template, data):
         if isinstance(data[placeholder], str):
             replaced_template = replaced_template.replace("{{" + placeholder + "}}", data[placeholder])
     return replaced_template
+
 
 def render_loop(template, data):
     if "loop_data" in data:

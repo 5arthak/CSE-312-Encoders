@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE312 Sample Front End</title>
+    <title>Encoder's Grocery List</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet"> 
@@ -14,7 +14,7 @@
 <body onload="welcome();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo">Your Grocery List</div>
+        <div class="logo"><a href="/">Encoder's List</a></div>
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -23,44 +23,31 @@
         <!-- NAVIGATION MENUS -->
         <div class="menu">
         <li><a href="/index">Home</a></li>
-        <li><a href="/addReceipt">Add Receipt</a></li>
-        <li><a href="/chat">Support</a></li>
+        <li><a href="/addDeals">Add Deals</a></li>
+        <li><a href="/onlineUsers">Online Users</a></li>
         <li><a href="/logout">Logout</a></li>
         </div>
         </ul>
     </nav>
     <a href="/createList">
     <button class="button"> + New Grocery List</button></a>
-    <h1>Store Receipt</h1>
-
-    <p id="paragraph">
-        Store your receipts here:
-    </p>
+    <h4 class="header">Use text field to send message:</h4>
+    <label for="chat-comment">Chat: </label>
+    <input id="chat-comment" type="text" name="comment">
     
-    <p>
-        Here's a {{image_name}}:
-    </p>
+    <button onclick="sendMessage()">Send</button>
     
-    <img src="image/{{image_filename}}" alt="It's a {{image_name}}" class="my_image"/>
-    
-    <form action="/image-upload" id="image-form" method="post" enctype="multipart/form-data">
-        <label for="image-form-comment">Comment: </label>
-        <textarea id="image-form-comment" name="comment" cols="40" rows="2"></textarea>
-        <br/>
-        <label for="form-file">Image: </label>
-        <input id="form-file" type="file" name="upload">
-        <input type="submit" value="Post">
-    </form>
+    <div id="chat"></div>
     
     <br/>
-    
-    {{loop}}
-    <img src="image/{{img_name}}" class="post_images"/>
-    {{comment}} </br>
-    {{end_loop}}
-    
+    <button onclick="startVideo()">Start My Video</button>
     <br/>
-
+    <button onclick="connectWebRTC()">Start Video Chat</button>
+    <br/>
+    
+    <video id="myVideo" autoplay muted></video>
+    <br/>
+    <video id="otherVideo" autoplay></video>
 </div>
 <script src="functions.js"></script>
 </body>

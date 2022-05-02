@@ -2,15 +2,12 @@ from urllib import response
 from util.router import Route
 from util.response import generate_response, redirect_response
 from util.security import secure_html
-# from util.template_engine import render_template
+from util.template_engine import render_template
 import util.mongodb as db
-import secrets
+import sys
 
 
-def add_paths(router):
-    
-    router.add_route(Route("GET", "/createList.html", show_list_submission))
-
+def add_paths(router):    
     # JS, CSS, ICO stuff
     router.add_route(Route("GET", "/functions.js", js))
     router.add_route(Route("GET", "/style.css", style))
@@ -21,7 +18,8 @@ def add_paths(router):
     router.add_route(Route("GET", "/register", register))
     router.add_route(Route("GET", "/index", index))
     router.add_route(Route("GET", "/createList", create_list))
-    router.add_route(Route("GET", "/addReceipt", add_receipt))
+    router.add_route(Route("GET", "/addDeals", add_deals))
+    router.add_route(Route("GET", "/onlineUsers", online_users))
 
 
     router.add_route(Route("GET", "/.", four_oh_four))
@@ -30,11 +28,10 @@ def add_paths(router):
     
 def check_user_status(request, handler):
     # check if user is logged in if so direct to home page else direct them to login page.
-    if is_log_in(request):
+    if log_in(request):
         response = redirect_response("/index", "302 Found")
     else:
         response = redirect_response("/login", "302 Found")
-    # response = redirect_response("/index", "302 Found")
     handler.request.sendall(response)
     
 
@@ -45,13 +42,50 @@ def register(request, handler):
     send_file("public/register.html", "text/html", request, handler)
 
 def index(request, handler):
+    if not log_in(request):
+        response = redirect_response("/login", "302 Found")
+        handler.request.sendall(response)
+        return
     send_file("public/index.html", "text/html", request, handler)
 
 def create_list(request, handler):
+    if not log_in(request):
+        response = redirect_response("/login", "302 Found")
+        handler.request.sendall(response)
+        return
     send_file("public/createList.html", "text/html", request, handler)
 
-def add_receipt(request, handler):
-    send_file("public/addReceipt.html", "text/html", request, handler)
+def add_deals(request, handler):
+    if not log_in(request):
+        response = redirect_response("/login", "302 Found")
+        handler.request.sendall(response)
+        return
+    deals = db.list_all_comments() 
+    print("deals", deals)
+    content = render_template("public/addDeals.html", {
+        "loop_data": deals})
+    response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
+
+def online_users(request, handler):
+    if not log_in(request):
+        response = redirect_response("/login", "302 Found")
+        handler.request.sendall(response)
+        return
+    online_users_list = db.get_online_users()
+    _, email = get_cookies(request)
+    user = next((i for i, item in enumerate(online_users_list) if item["email"] == email), None)
+    pros = online_users_list[user].get("pronouns")
+    online_users_list.pop(user)
+    content = render_template("public/onlineUsers.html", {
+        "user_email": email,
+        "your_pronouns": pros,
+        "loop_data": online_users_list})
+    response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
+
+
+
 
 def four_oh_four(_, handler):
     response = generate_response(b"The requested content does not exist", "text/plain; charset=utf-8", "404 Not Found")
@@ -70,15 +104,6 @@ def style(request, handler):
     send_file("public/style.css", "text/css; charset=utf-8", request, handler)
 
 
-def show_list_submission(request,handler):
-    send_file("public/createList.html", "text/html", request, handler)
-
-
-def images(request, handler):
-    path_prefix = '/image/'
-    image_name = request.path[request.path.find(path_prefix) + len(path_prefix):]
-    image_name = image_name.replace("/", "") #Security measurement
-    send_file("public/image/" + str(image_name), "image/jpeg", request, handler)
 
 
 def send_file(filename, mime_type, request, handler):
@@ -93,24 +118,24 @@ def send_file(filename, mime_type, request, handler):
 
 
 # Misc.
-def is_log_in(request):
+def log_in(request):
     _, user = get_cookies(request)
     if user == None:
         return False
     return True
 
 def get_cookies(request):
-    # Returns the cookies and username (aka email)
+    # Returns the cookies and email (aka usernam)
     cookies = None
-    username = None
+    email = None
     cookie = request.headers.get("Cookie")
     if cookie != None:
         cookies = parse_cookie(cookie)
         if cookies.get("auth_token") != None:
             user = db.user_token(cookies["auth_token"])
             if len(user) != 0:
-                username = secure_html(user[0].get("username"))
-    return (cookies, username)
+                email = secure_html(user[0].get("email"))
+    return (cookies, email)
     
 
 def parse_cookie(cookie):

@@ -11,10 +11,10 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
 </head>
-<body onload="welcome();">
+<!-- <body onload="welcome();"> -->
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo">Encoder's List</div>
+        <div class="logo"><a href="/">Encoder's List</a></div>
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -23,19 +23,25 @@
         <!-- NAVIGATION MENUS -->
         <div class="menu">
         <li><a href="/index">Home</a></li>
-        <li><a href="/addReceipt">Add Receipt</a></li>
-        <li><a href="/chat">Support</a></li>
+        <li><a href="/addDeals">Add Deals</a></li>
+        <li><a href="/onlineUsers">Online Users</a></li>
         <li><a href="/logout">Logout</a></li>
         </div>
         </ul>
     </nav>
-    <a href="/createList">
-    <button class="button"> + New Grocery List</button></a>
-    <h1 class = "header">Saved Lists:</h1>
-
-    <p id="paragraph">
-        Click on the lists to expand / view:
-    </p>
+    <h1>{{user_email}} (You) </h1>
+    <form action="/pronouns" id="pronouns" method="post" enctype="multipart/form-data">
+        <br>
+        <label for="pronouns">Pronouns: </label><br>
+        <input id="pronouns" name="pronouns" placeholder = "{{your_pronouns}}"" type="text" required>
+        <input type="submit" value="Update">
+        <br>
+    </form>
+    <h2>Online Users</h2>
+    {{loop}}
+        <a href="/chat">{{email}}({{pronouns}})</a>
+        </br>
+    {{end_loop}}
     <br>
     <p>
 </div>

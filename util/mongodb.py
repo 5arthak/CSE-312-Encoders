@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import bcrypt
 from hashlib import sha256
+import sys
 
 mongo_client = MongoClient("mongo")
 db = mongo_client["cse312"]
@@ -42,6 +43,7 @@ def get_next_groceryid(list_name: str):
         return 1
 
 
+
 # MongoDB for Comments and picture file location
 def insert_comment(comment):
     """
@@ -56,26 +58,30 @@ def list_all_comments():
     all_comments = comments_collection.find({}, {"_id": 0})
     return list(all_comments)
 
+
+
 # MongoDB for chat comments featuring username
-def insert_chat(chat):
+def insert_comment(comment):
     """
-    Insert comment = {"username": "username", 
-                      "comment": "hello world"
+    Insert comment = {"comment": "comment_message", 
+                      "img_name": "image1.jpg"
                       } to collection
     """ 
-    chats_collection.insert_one(chat)
-    # return chat
+    comments_collection.insert_one(comment)
+    return comment
 
-def list_all_chats():
-    all_chats = chats_collection.find({}, {"_id": 0})
-    return list(all_chats)
+def list_all_comments():
+    all_comments = comments_collection.find({}, {"_id": 0})
+    return list(all_comments)
+
 
 
 # MongoDB for adding user after registration 
 def insert_new_user(user_info):
     """
     Insert user_info = {"email": "address", 
-                        "pwd": "hello world"
+                        "pwd": "hello world",
+                        "pronouns": "",
                     } to collection
     """ 
     find_user_info = users_collection.find({"email": user_info["email"]}, {"_id": 0, "pwd": 0})
@@ -86,24 +92,41 @@ def insert_new_user(user_info):
     return False
 
 
-# MongoDB authenticating user after login 
-def auth_user(user_info):
+# Authenticating user after login 
+def auth_user_login(user_info):
     """
-    Find email in db and check if the inputed password with 
+    Find email in db and check if the inputed pwd equal hashed pwd
+    If so reset auth_toke, status = True, tcp socket conn 
     Insert user_info = {"email": "email", 
-                        "pwd": "hello world"
-                        "auth_token": "token"
+                        "pwd": "hello world",
+                        "auth_token": "token",
+                        "status": True,
                     } to collection
     """ 
     find_user_info = users_collection.find({"email": user_info["email"]}, {"_id": 0})
     pwd = list(find_user_info)
+    if len(pwd) == 0:
+        return False
     if bcrypt.checkpw(bytes(user_info["pwd"], 'utf-8'), pwd[0]["pwd"]):
-        # Must hash the generated auth_token and then store in db
+        # hash the generated auth_token and then store in db
         hash_token = sha256(str(user_info["auth_token"]).encode()).hexdigest()
-        users_collection.update_one({"email": user_info["email"]}, {"$set": { 'auth_token': hash_token}})
+        users_collection.update_one({"email": user_info["email"]}, 
+                                    {"$set": { 'auth_token': hash_token, 'status': True}})
         return True
     return False
 
+
+def user_logoff(email):
+    users_collection.update_one({"email": email}, {"$set": { 'status': False}})
+
+
+def get_online_users():
+    find_user_info = users_collection.find({"status": True}, {"_id": 0, 'email': 1, "pronouns": 1})
+    return list(find_user_info)
+    
+
+def update_pronouns(email, pronouns):
+    users_collection.update_one({"email": email}, {"$set": { 'pronouns': pronouns}})
 
 def user_token(token):
     # Return user info from auth token

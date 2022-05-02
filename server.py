@@ -31,17 +31,16 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if len(received_data) == 0:
                 return
             print("\n- - - received data - - -")
-            # print(received_data)
+            print(received_data)
             print("- - - end of data - - -")
             if len(all_data) == 0:
                 request = Request(received_data)
                 content_length = int(request.headers.get("Content-Length", 0))
                 all_data += request.body
                 header = received_data.split(b'\r\n\r\n')[0]
-
             else: all_data += received_data
 
-        print(header)
+        # print(header)
         self.router.handle_request(Request(header + b'\r\n\r\n' + all_data), self)
 
         # For docker, prints the buffer

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE312 Sample Front End</title>
+    <title>Encoder's Grocery List</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet"> 
@@ -14,7 +14,7 @@
 <body onload="welcome();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo">Your Grocery List</div>
+        <div class="logo"><a href="/">Encoder's List</a></div>
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -22,25 +22,26 @@
         <label for="checkbox_toggle" class="hamburger">&#9776;</label> -->
         </ul>
     </nav>
-    <h2 class="header">Login form:</h2>
-    <center>
-        <div class="register">
-        <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+    <h2 class="header">Registration form:</h2>
+    <center><div class="register">
+        <form action="/registration-form" id="register-form" method="post" enctype="multipart/form-data">
             <br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="email">Email: </label><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="email" name="email" placeholder = "Enter Email" type="text" required>
+            <label for="email">Email: </label><br>
+            <input id="email" name="email" placeholder = "Enter Email" type="text" required>
             <br/><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="pwd">Password: </label><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="pwd" name="pwd" placeholder = "Enter Password" type="password" required>
+            <label for="pwd">Password: </label><br>
+            <input id="pwd" name="pwd" placeholder = "Enter Password" type="password" required>
+            <br/><br>
+            <label for="password-re-enter">Re-enter your Password: </label>
+            <input id="password-re-enter" name="re-enter-password" placeholder = "Re-Enter Password" type="password" required>
             <br><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input class = "button" type="submit" value="Login">
+            <input class = "button" type="submit" value="Register">
             <br> <br>
         </form>
-        </div>
-    </center>
+    </div></center>
     <br/>
    <br> 
-   <center><a href = "/register"><button class = "button" onclick="sendMessage()">New User? Register!</button></a></center>
+   <center><a href = "/login"><button class = "button" onclick="sendMessage()">Already a user? Log in!</button></a></center>
     
     <div id="chat"></div>
     </div>
