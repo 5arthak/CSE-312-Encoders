@@ -20,7 +20,7 @@ def registration(request, handler):
     encrypted_user_info["pronouns"] = ''
     new_user = db.insert_new_user(encrypted_user_info)
     if new_user:
-        response = generate_response(b"Registration successful, try logging in", "text/plain; charset=utf-8")
+        response = redirect_response("/login")
     else:
         response = generate_response(b"Username unavailable, try again", "text/plain; charset=utf-8", "404 Not Found")
     handler.request.sendall(response)
