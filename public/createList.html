@@ -31,6 +31,7 @@
     </nav>
     <h1></h1>
     <!-- "/image-upload" changed to /newList-upload--> 
+
     <div class="addDiv">
     <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
         <br>
@@ -48,7 +49,18 @@
     </form></div>
     <div class = "currentListDiv">
         <p class = "list"> Added List Items: </p>
+        {{loop}}
+        <p>
+            {{item_name}} <br>
+        </p>
+        <br><br>
+        <p>
+            {{quantity}}
+        </p>
+        </br>
+        {{end_loop}}
     </div>
+    
     <br/>
    <br> 
    <center><button class = "button" onclick="sendMessage()">Save List</button></center>

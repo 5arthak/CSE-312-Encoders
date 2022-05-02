@@ -20,7 +20,7 @@ def add_item(list_name: str, item_name: str, quantity: str):
     quantity_num = int(quantity) if quantity != "" else 0
     name = {"list_name": list_name}
     item = {"item_name": item_name,
-            "quantity": quantity_num}
+            "quantity": str(quantity_num)}
     # item["id"] = get_next_groceryid(list_name)
     grocery_list = grocery_items_collection.find_one(name)
     if grocery_list:
@@ -31,6 +31,9 @@ def add_item(list_name: str, item_name: str, quantity: str):
         grocery_items_collection.insert_one(name)
     return grocery_items_collection.find_one(name)
 
+def list_grocery_items():
+    all_items = grocery_items_collection.find({}, {"_id": 0})
+    return list(all_items)
 
 def get_next_groceryid(list_name: str):
     id_object = users_id_collection.find_one({"name": list_name})

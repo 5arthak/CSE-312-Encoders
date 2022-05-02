@@ -1,3 +1,4 @@
+from queue import Empty
 from urllib import response
 from util.router import Route
 from util.response import generate_response, redirect_response
@@ -53,7 +54,27 @@ def create_list(request, handler):
         response = redirect_response("/login", "302 Found")
         handler.request.sendall(response)
         return
-    send_file("public/createList.html", "text/html", request, handler)
+    
+    list_items = db.list_grocery_items()
+    if(list_items):
+        for n in list_items:
+            content = render_template("public/createList.html", {
+                "loop_data": n["items"]})
+        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+        handler.request.sendall(response)
+    else:
+        list_item = [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
+        for n in list_item:
+            content = render_template("public/createList.html", {
+                "loop_data": n["items"]})
+        #print(get_list_items, "content", flush=True)
+        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+        handler.request.sendall(response)
+        send_file("public/createList.html", "text/html", request, handler)
+        
+
+
+
 
 def add_deals(request, handler):
     if not log_in(request):
