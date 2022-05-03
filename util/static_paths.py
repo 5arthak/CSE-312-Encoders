@@ -10,6 +10,7 @@ import sys
 
 def add_paths(router):    
     # JS, CSS, ICO stuff
+    router.add_route(Route("GET", "/image/.", images))
     router.add_route(Route("GET", "/functions.js", js))
     router.add_route(Route("GET", "/style.css", style))
     router.add_route(Route("GET", "/favicon.ico", favicon))
@@ -126,6 +127,11 @@ def style(request, handler):
 
 
 
+def images(request, handler):
+    path_prefix = '/image/'
+    image_name = request.path[request.path.find(path_prefix) + len(path_prefix):]
+    image_name = image_name.replace("/", "") #Security measurement
+    send_file("public/image/" + str(image_name), "image/jpeg", request, handler)
 
 def send_file(filename, mime_type, request, handler):
     try:
@@ -138,7 +144,7 @@ def send_file(filename, mime_type, request, handler):
         handler.request.sendall(response)
 
 
-# Misc.
+# Cookie Misc.
 def log_in(request):
     _, user = get_cookies(request)
     if user == None:
@@ -157,7 +163,6 @@ def get_cookies(request):
             if len(user) != 0:
                 email = secure_html(user[0].get("email"))
     return (cookies, email)
-    
 
 def parse_cookie(cookie):
     cookies = {}

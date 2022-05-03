@@ -90,5 +90,3 @@ def parse_image(image_bytes):
     with open("public/image/" + img_name, "wb") as output_file:
         output_file.write(image_bytes)
     return img_name
-
-    # deal76600.jpg
