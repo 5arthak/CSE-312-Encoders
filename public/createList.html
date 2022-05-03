@@ -48,15 +48,11 @@
         <br><br>
     </form></div>
     <div class = "currentListDiv">
-        <p class = "list"> Added List Items: </p>
+
+        <p class = "list"> Added List Items:<br></p><br>
         {{loop}}
-        <p>
-            {{item_name}} <br>
-        </p>
-        <br><br>
-        <p>
-            {{quantity}}
-        </p>
+        {{item_name}}
+        {{quantity}}
         </br>
         {{end_loop}}
     </div>
