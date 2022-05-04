@@ -15,6 +15,8 @@ def add_paths(router):
     router.add_route(Route("GET", "/websocket", websocket))
     router.add_route(Route("GET", "/chat-history", chat_history))
 
+    router.add_route(Route("GET", "/createList.", grocery_list_items))
+
 
 def websocket(request, handler):
     assert request.headers.get('Upgrade') == "websocket"

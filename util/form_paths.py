@@ -63,16 +63,22 @@ def list_parser(request, boundary): # "item", "name", "quantity"
         header = (parse_headers(raw_header[0]))
         name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
         body = raw_header[1]
-        if name == '"name"':
-            grocery_list["name"] = secure_html(body.decode()).strip()
-        elif name == '"item"':
-            grocery_list["item"] = secure_html(body.decode()).strip()
+        if name == '"item"':
+            grocery_list["item_name"] = secure_html(body.decode()).strip()
+        elif name == 'item_upload':
+            grocery_list["item_image"] = parse_image(body)
         elif name == '"quantity"':
             grocery_list["quantity"] = secure_html(body.decode()).strip()
-    list_name = grocery_list.get("name","")
-    item_name = grocery_list.get("item","")
+    item_name = grocery_list.get("item_name","")
+    item_image = grocery_list.get("item_image","")
     quantity = grocery_list.get("quantity","0")
-    db.add_item(list_name, item_name, quantity)
+
+    item_filename = "public/" + "{{list_name}}" + "_" + item_name + ".jpg"
+    with open(item_filename, 'wb') as image_file:
+
+
+        pass
+    db.add_item(item_image, item_name, quantity)
     return True
             
 
