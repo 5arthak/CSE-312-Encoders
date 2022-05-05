@@ -39,15 +39,8 @@ def new_list_parser(request, boundary):
             
             print("list_name", list_name)
             db.insert_new_list(list_name)
-            # create_list_page(list_name)
     return True
 
-# def create_list_page(list_name):
-#     new_list_page = "public/list/" + list_name
-#     with open(new_list_page, "w") as output_file:
-#         template_html = open("ceateList.html", "r")
-#         output_file.write(template_html.read())
-#     return
 
 # Parser for Image upload on the deals page
 def image_upload(request, handler):

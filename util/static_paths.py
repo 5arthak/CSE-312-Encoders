@@ -19,7 +19,7 @@ def add_paths(router):
     router.add_route(Route("GET", "/login", login))
     router.add_route(Route("GET", "/register", register))
     router.add_route(Route("GET", "/index", index))
-    router.add_route(Route("GET", "/createList", create_list))
+    # router.add_route(Route("GET", "/createList", create_list))
     router.add_route(Route("GET", "/addDeals", add_deals))
     router.add_route(Route("GET", "/onlineUsers", online_users))
     router.add_route(Route("GET", "/list.", render_list))
@@ -57,27 +57,27 @@ def index(request, handler):
     response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
     handler.request.sendall(response)
 
-def create_list(request, handler):
-    if not log_in(request):
-        response = redirect_response("/login", "302 Found")
-        handler.request.sendall(response)
-        return
-    list_items = db.list_grocery_items()
-    if(list_items):
-        for n in list_items:
-            content = render_template("public/createList.html", {
-                "loop_data": n["items"]})
-        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-        handler.request.sendall(response)
-    else:
-        list_item = [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
-        for n in list_item:
-            content = render_template("public/createList.html", {
-                "loop_data": n["items"]})
-        #print(get_list_items, "content", flush=True)
-        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-        handler.request.sendall(response)
-        send_file("public/createList.html", "text/html", request, handler)
+# def create_list(request, handler):
+#     if not log_in(request):
+#         response = redirect_response("/login", "302 Found")
+#         handler.request.sendall(response)
+#         return
+#     list_items = db.list_grocery_items()
+#     if(list_items):
+#         for n in list_items:
+#             content = render_template("public/createList.html", {
+#                 "loop_data": n["items"]})
+#         response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+#         handler.request.sendall(response)
+#     else:
+#         list_item = [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
+#         for n in list_item:
+#             content = render_template("public/createList.html", {
+#                 "loop_data": n["items"]})
+#         #print(get_list_items, "content", flush=True)
+#         response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+#         handler.request.sendall(response)
+#         send_file("public/createList.html", "text/html", request, handler)
         
 def render_list(request, handler):
     # Check if user is logged in
@@ -96,21 +96,11 @@ def render_list(request, handler):
         response = redirect_response("/index", "302 Found")
         handler.request.sendall(response)
         return 
-    list_items = db.retrieve_items(list_name)
-    if len(list_items) != 0:
-        # for n in list_items:
-        content = render_template("public/createList.html", {
-            "list_name": list_name,
-            "loop_data": list_items["items"]})
-        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-        handler.request.sendall(response)
-    else:
-        content = render_template("public/createList.html", {
-            "list_name": list_name,
-            "loop_data": ""})
-        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-        handler.request.sendall(response)
-
+    content = render_template("public/createList.html", {
+        "list_name": list_name, 
+        "loop_data": []})
+    response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
 
 
 def add_deals(request, handler):

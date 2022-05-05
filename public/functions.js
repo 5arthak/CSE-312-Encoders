@@ -10,6 +10,28 @@ document.addEventListener("keypress", function (event) {
     }
 });
 
+function sendImage(){
+    const imageBox = document.getElementById("item-image");
+    const image = imageBox.value.split('fakepath\\')[1];
+    console.log(image);
+    imageBox.value = "";
+    // , 'image': image
+}
+
+function sendFile() {
+    var file = document.getElementById('filename').files[0];
+    var reader = new FileReader();
+    var rawData = new ArrayBuffer();            
+    reader.loadend = function() {
+    }
+    reader.onload = function(e) {
+        rawData = e.target.result;
+        ws.send(rawData);
+        alert("the File has been transferred.")
+    }
+    reader.readAsArrayBuffer(file);
+
+}
 
 // Read the item name and quanity the user is sending to chat and send it to the server over the WebSocket as a JSON string
 function sendItem() {
@@ -17,15 +39,11 @@ function sendItem() {
     const itemName = itemNameBox.value;
     const quantityBox = document.getElementById("quantity");
     const quantity = quantityBox.value;
-    const imageBox = document.getElementById("item-image");
-    const image = imageBox.value.split('fakepath\\')[1];
-    console.log(image);
     itemNameBox.value = "";
     quantityBox.value = "";
-    imageBox.value = "";
     itemNameBox.focus();
-    theJson = JSON.stringify({'messageType': 'chatMessage', 'item-name': itemName, 'quantity': quantity, 'image': image})
-    console.log(theJson)
+    theJson = JSON.stringify({'messageType': 'chatMessage', 'item-name': itemName, 'quantity': quantity})
+    // console.log(theJson)
     if (itemName !== "") {
         socket.send(theJson);
     }
@@ -34,7 +52,7 @@ function sendItem() {
 // Renders a new item to the page
 function addMessage(chatMessage) {
     let chat = document.getElementById('items');
-    chat.innerHTML += "<b>" + chatMessage['item-name'] + "</b>: " + chatMessage["quantity"] + "<br/>";  //<img src='"+chatMessage["image"];
+    chat.innerHTML += "<b>" + chatMessage['item-name'] + "</b>: " + chatMessage["quantity"] + "<br/>"; //+ "<img src='image/flamingo.jpg'>";
 }
 
 // called when the page loads to get the chat_history

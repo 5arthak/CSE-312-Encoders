@@ -29,53 +29,24 @@
         </div>
         </ul>
     </nav>
-    <h1></h1>
-    <div class="addDiv">
-    <!-- <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
-        <br>
-        <p>Add Item:</p>
-        <label for="newList-form-comment">Item Name:</label>
-        <input type ="text" id="newList-form-item" name="item" cols="40" rows="3"></input><br><br>
-        <br/>
-        <label for="newList-form-quantity">Item Quantity:</label>
-        <input type ="number" id="newList-form-quantity" name="quantity" cols="40" rows="1"></input><br><br>
-        <br/>
-        <label for="newList-form-image">Item Image:</label>
-        <input id="newList-form-image" type="file" name="item_upload">
-        <input type ="submit" value="Add Image" id="newList-form-image" name="item_upload" cols="40" rows="3"></input><br><br>
-        <br>
-        <input class="button" type="submit" value="Add Item">
-        <br><br>
-    </form> -->
-    <!-- <form id="newList-form"> -->
-        <!-- <label for="item-name">Item Name: </label>
-        <input id="item-name" type="text" name="item-name">
-        <label for="quantity">Quantity: </label>
-        <input id="quantity" type="number" name="quantity"> -->
-        <!-- <p id="pp"></p>
-        <label for="chat-comment">Chat: </label>
-        <input id="chat-comment" type="text" name="comment">
-        <button onclick="sendMessage()">Send</button>
-        <button onclick="addItem()">Add Item</button>
-    </form> -->
-    </div>          
     <p id="pp"></p>
 
     <label for="item-name">Item Name: </label>
     <input id="item-name" type="text" name="item-name">
     <label for="quantity">Quantity: </label>
     <input id="quantity" type="number" name="quantity">
+    <button onclick="sendItem()">Add Item</button>
+
+    <br>
     <label for="item-image">Item Image:</label>
     <input id="item-image" type="file" name="item-image">
-    <button onclick="sendItem()">Send</button>
+    <button onclick="sendImage()">Upload Image</button>
     
-    <div id="items"></div>
 
-    </div>
     <br/>
-    <br> 
+    <div id="items"></div>
     <!-- <center><button class = "button" onclick="saveList()">Save List</button></center> -->
-    
+    {{loop}}{{empty}}{{end_loop}}
     </div>
 <script src="functions.js"></script>
 </body>

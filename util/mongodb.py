@@ -83,15 +83,31 @@ def get_list_names():
 
 def retrieve_items(list_name):
     """
-    Return [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
+    Return [{'item_name': '', 'quantity': ''}, ]
     """
     try:
         grocery_items = grocery_lists_collection.find_one({"list_name": list_name}, {"_id": 0, "items": 1})                
-        return list(grocery_items)
+        grocery_items = list(grocery_items)
+        return grocery_items[0].get('items')
     except:
-        return {}
+        return []
 
 
+# MongoDB for chat comments featuring username
+def insert_chat(chat):
+    """
+    Insert comment = {"username": "username", 
+                      "comment": "hello world"
+                      } to collection
+    """ 
+    chats_collection.insert_one(chat)
+    # return chat
+
+def list_all_chats():
+    all_chats = chats_collection.find({}, {"_id": 0})
+    return list(all_chats)
+
+# {}
 
 # MongoDB for uploading images and details of a deal
 def insert_deal(deal):
@@ -167,17 +183,3 @@ def user_token(token):
         return user_info
     return []
 
-
-# MongoDB for chat comments featuring username
-def insert_chat(chat):
-    """
-    Insert comment = {"username": "username", 
-                      "comment": "hello world"
-                      } to collection
-    """ 
-    chats_collection.insert_one(chat)
-    # return chat
-
-def list_all_chats():
-    all_chats = chats_collection.find({}, {"_id": 0})
-    return list(all_chats)
