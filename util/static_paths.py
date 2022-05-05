@@ -19,7 +19,7 @@ def add_paths(router):
     router.add_route(Route("GET", "/login", login))
     router.add_route(Route("GET", "/register", register))
     router.add_route(Route("GET", "/index", index))
-    # router.add_route(Route("GET", "/createList", create_list))
+    router.add_route(Route("GET", "/createList", create_list))
     router.add_route(Route("GET", "/addDeals", add_deals))
     router.add_route(Route("GET", "/onlineUsers", online_users))
     router.add_route(Route("GET", "/list.", render_list))

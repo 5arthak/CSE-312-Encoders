@@ -6,25 +6,35 @@ let webRTCConnection;
 // Allow users to send messages by pressing enter instead of clicking the Send button
 document.addEventListener("keypress", function (event) {
     if (event.code === "Enter") {
-        sendMessage();
+        sendItem();
     }
 });
 
-// Read the comment the user is sending to chat and send it to the server over the WebSocket as a JSON string
-function sendMessage() {
-    const chatBox = document.getElementById("chat-comment");
-    const comment = chatBox.value;
-    chatBox.value = "";
-    chatBox.focus();
-    if (comment !== "") {
-        socket.send(JSON.stringify({'messageType': 'chatMessage', 'comment': comment}));
+
+// Read the item name and quanity the user is sending to chat and send it to the server over the WebSocket as a JSON string
+function sendItem() {
+    const itemNameBox = document.getElementById("item-name");
+    const itemName = itemNameBox.value;
+    const quantityBox = document.getElementById("quantity");
+    const quantity = quantityBox.value;
+    const imageBox = document.getElementById("item-image");
+    const image = imageBox.value.split('fakepath\\')[1];
+    console.log(image);
+    itemNameBox.value = "";
+    quantityBox.value = "";
+    imageBox.value = "";
+    itemNameBox.focus();
+    theJson = JSON.stringify({'messageType': 'chatMessage', 'item-name': itemName, 'quantity': quantity, 'image': image})
+    console.log(theJson)
+    if (itemName !== "") {
+        socket.send(theJson);
     }
 }
 
-// Renders a new chat message to the page
+// Renders a new item to the page
 function addMessage(chatMessage) {
-    let chat = document.getElementById('chat');
-    chat.innerHTML += "<b>" + chatMessage['username'] + "</b>: " + chatMessage["comment"] + "<br/>";
+    let chat = document.getElementById('items');
+    chat.innerHTML += "<b>" + chatMessage['item-name'] + "</b>: " + chatMessage["quantity"] + "<br/>";  //<img src='"+chatMessage["image"];
 }
 
 // called when the page loads to get the chat_history
@@ -42,6 +52,7 @@ function get_chat_history() {
     request.send();
 }
 
+
 // Called whenever data is received from the server over the WebSocket connection
 socket.onmessage = function (ws_message) {
     const message = JSON.parse(ws_message.data);
@@ -50,19 +61,7 @@ socket.onmessage = function (ws_message) {
     switch (messageType) {
         case 'chatMessage':
             addMessage(message);
-            break;
-        case 'webRTC-offer':
-            webRTCConnection.setRemoteDescription(new RTCSessionDescription(message.offer));
-            webRTCConnection.createAnswer().then(answer => {
-                webRTCConnection.setLocalDescription(answer);
-                socket.send(JSON.stringify({'messageType': 'webRTC-answer', 'answer': answer}));
-            });
-            break;
-        case 'webRTC-answer':
-            webRTCConnection.setRemoteDescription(new RTCSessionDescription(message.answer));
-            break;
-        case 'webRTC-candidate':
-            webRTCConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
+            console.log(message)
             break;
         default:
             console.log("received an invalid WS messageType");
@@ -106,13 +105,21 @@ function connectWebRTC() {
         socket.send(JSON.stringify({'messageType': 'webRTC-offer', 'offer': webRTCOffer}));
         webRTCConnection.setLocalDescription(webRTCOffer);
     });
-
 }
 
 function welcome() {
     document.getElementById("paragraph").innerHTML += "<br/>This text was added by JavaScript 🦆"
 
-    // get_chat_history()
+    get_chat_history()
+
+    // use this line to start your video without having to click a button. Helpful for debugging
+    // startVideo();
+}
+
+function displayList() {
+    document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"
+
+    get_chat_history()
 
     // use this line to start your video without having to click a button. Helpful for debugging
     // startVideo();

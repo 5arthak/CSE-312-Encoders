@@ -166,3 +166,18 @@ def user_token(token):
     if len(user_info) == 1:
         return user_info
     return []
+
+
+# MongoDB for chat comments featuring username
+def insert_chat(chat):
+    """
+    Insert comment = {"username": "username", 
+                      "comment": "hello world"
+                      } to collection
+    """ 
+    chats_collection.insert_one(chat)
+    # return chat
+
+def list_all_chats():
+    all_chats = chats_collection.find({}, {"_id": 0})
+    return list(all_chats)

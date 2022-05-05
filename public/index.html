@@ -11,7 +11,8 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body onload="welcome();">
+
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
         <div class="logo"><a href="/">Encoder's List</a></div>
@@ -37,6 +38,10 @@
         &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input type="submit" value="Create New Grocery List">
         <br> <br>
     </form>
+    <!-- <label for="chat-comment">Chat: </label>
+    <input id="chat-comment" type="text" name="comment">
+    <button onclick="sendMessage()">Send</button> -->
+    <div id="list_chat"></div>
 
     <!-- <a href="/index"><button>Create New Grocery List</button></a> -->
     <h1 class = "header">Saved Lists:</h1>

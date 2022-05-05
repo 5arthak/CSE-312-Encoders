@@ -15,9 +15,9 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
     ws_other = {}
     def __init__(self, request, client_address, server):
         self.router = Router()
+        ws.add_paths(self.router)
         form_paths(self.router)
         login_paths(self.router)
-        ws.add_paths(self.router)
         static_paths(self.router)
         super().__init__(request, client_address, server)
 
@@ -36,6 +36,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 content_length = int(request.headers.get("Content-Length", 0))
                 all_data += request.body
                 header = received_data.split(b'\r\n\r\n')[0]
+
             else: all_data += received_data
 
         # print(header)

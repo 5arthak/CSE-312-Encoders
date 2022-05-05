@@ -9,6 +9,7 @@ from server import MyTCPHandler
 from util.router import Route
 from util.security import secure_html
 import util.mongodb as db
+import sys
 
 
 def add_paths(router):
@@ -22,9 +23,9 @@ def websocket(request, handler):
     websocket_key = request.headers.get('Sec-WebSocket-Key')
     accept = compute_accept(websocket_key)
     test_accept()
-    accept_header = Header("Sec-WebSocket-Accept", accept)
     response = generate_response(b'', "NA", "101 Switching Protocols", 
-                                [accept_header, Header("Connection", "Upgrade"), Header("Upgrade", "websocket")])
+                                [("Sec-WebSocket-Accept", accept), ("Connection", "Upgrade"), ("Upgrade", "websocket")])
+
     handler.request.sendall(response)
     username = "User" + str(random.randint(0, 10000))
     MyTCPHandler.ws_connections[username] = handler
@@ -36,6 +37,8 @@ def websocket(request, handler):
     elif MyTCPHandler.ws_other.get(1) == None:
         MyTCPHandler.ws_other[1] = handler
         other_index = 0
+    print(MyTCPHandler.ws_other)
+    print(MyTCPHandler.ws_connections)
     while True:
         ws_frame_raw = handler.request.recv(1024)
         try:
@@ -65,6 +68,7 @@ def websocket(request, handler):
                     payload = ws_frame_raw[masking_index+4:]
                     
                     while ws_length > len(payload):
+                        print(ws_length, len(payload))
                         more_ws_frame_raw = handler.request.recv(1024)
                         payload += more_ws_frame_raw[:]
                     
@@ -76,12 +80,12 @@ def websocket(request, handler):
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
                     if msg_type == "chatMessage":
-                        payload_decoded['comment'] = secure_html(payload_decoded['comment'])
-                        payload_decoded['username'] = username
+                        print(payload_decoded)
+                        payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
                         payload_decoded.pop('messageType')
-                        # db.insert_chat(payload_decoded)
+                        db.insert_chat(payload_decoded)
 
                         outgoing_bytes = [129]
                         if outgoing_payload_len < 126:
@@ -104,21 +108,6 @@ def websocket(request, handler):
                         outgoing_encoded = bytes(outgoing_bytes)
                         for tcp in MyTCPHandler.ws_conn_list:
                             tcp.request.sendall(outgoing_encoded)
-                    elif msg_type == "webRTC-offer" or "webRTC-answer" or "webRTC-candidate":
-                        outgoing_bytes = []
-                        for x in range(masking_index):
-                            if x == 1:
-                                outgoing_bytes.append(ws_frame_raw[x] & 127)
-                            else:
-                                outgoing_bytes.append(ws_frame_raw[x])
-                        for i in range(0, ws_length):
-                            frame = payload[i]
-                            outgoing_bytes.append(mask[i % 4] ^ frame)
-
-                        outgoing_encoded = bytes(outgoing_bytes)
-
-                        other_tcp = MyTCPHandler.ws_other[other_index]
-                        other_tcp.request.sendall(outgoing_encoded)
         except:
             pass
     
@@ -133,39 +122,11 @@ def to_bin(dec):
 def bin_to_int(bin, bytes):
     ints = []
     for x in range(8, len(bin)+1, 8):
+      print(x)
       ints.append(int(bin[x-8:x], 2))
     while len(ints) != bytes:
       ints.insert(0, 0)
     return ints
-
-
-def send_chat(payload_decoded, username):
-    payload_decoded['comment'] = secure_html(payload_decoded['comment'])
-    payload_decoded['username'] = username
-    outgoing_payload = json.dumps(payload_decoded)
-    outgoing_payload_len = len(outgoing_payload)
-    payload_decoded.pop('messageType')
-    db.insert_chat(payload_decoded)
-
-    outgoing_bytes = [129]
-    if outgoing_payload_len < 126:
-        outgoing_bytes.append(outgoing_payload_len)
-    elif outgoing_payload_len >=126 and outgoing_payload_len < 65536:
-        outgoing_bytes.append(126)
-        bin = str(to_bin(outgoing_payload_len))
-        ins = bin_to_int(bin, 2)
-        for x in ins:
-            outgoing_bytes.append(x)
-    else:
-        outgoing_bytes.append(127)
-        bin = str(to_bin(outgoing_payload_len))
-        ins = bin_to_int(bin, 8)
-        for x in ins:
-            outgoing_bytes.append(x)
-    for char in outgoing_payload:
-        utf = ord(char)
-        outgoing_bytes.append(utf)
-    outgoing_encoded = bytes(outgoing_bytes)
 
 
 def compute_accept(websocket_key):
@@ -184,8 +145,9 @@ def test_accept():
 
 
 def chat_history(_, handler):
-    history = [{"username": "user879", "comment": "hi 🚗"}, 
-               {"username": "user222", "comment": "222"}]
-    # history = db.list_all_chats()
+    history = [{"item-name": "peanut", "quantity": 1}, 
+               {"item-name": "walnut", "quantity": 3}]
+    history = db.list_all_chats()
+    print(history)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

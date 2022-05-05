@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
-<body onload="welcome();">
+<body onload="displayList();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
         <div class="logo">{{list_name}}</div> <!-- {{listname}} -->
@@ -30,46 +30,52 @@
         </ul>
     </nav>
     <h1></h1>
-    <!-- "/image-upload" changed to /newList-upload--> 
-
     <div class="addDiv">
-    <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
+    <!-- <form action="/newList-upload" id="newList-form" method="post" enctype="multipart/form-data">
         <br>
         <p>Add Item:</p>
-        <!-- <label for="newList-form-comment">List Name:</label>
-        <input type ="text" id="newList-form-name" name="name" cols="40" rows="1"></input><br><br> -->
         <label for="newList-form-comment">Item Name:</label>
         <input type ="text" id="newList-form-item" name="item" cols="40" rows="3"></input><br><br>
-        
         <br/>
-
         <label for="newList-form-quantity">Item Quantity:</label>
         <input type ="number" id="newList-form-quantity" name="quantity" cols="40" rows="1"></input><br><br>
-       
         <br/>
-        
         <label for="newList-form-image">Item Image:</label>
         <input id="newList-form-image" type="file" name="item_upload">
-        
         <input type ="submit" value="Add Image" id="newList-form-image" name="item_upload" cols="40" rows="3"></input><br><br>
-
-    <br/><br>
+        <br>
         <input class="button" type="submit" value="Add Item">
         <br><br>
-    </form></div>
-    <div class = "currentListDiv">
-        <p class = "list"> Added List Items:<br></p><br>
-        {{loop}}
-        {{item_name}}
-        {{quantity}}
-        </br>
-        {{end_loop}}
+    </form> -->
+    <!-- <form id="newList-form"> -->
+        <!-- <label for="item-name">Item Name: </label>
+        <input id="item-name" type="text" name="item-name">
+        <label for="quantity">Quantity: </label>
+        <input id="quantity" type="number" name="quantity"> -->
+        <!-- <p id="pp"></p>
+        <label for="chat-comment">Chat: </label>
+        <input id="chat-comment" type="text" name="comment">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="addItem()">Add Item</button>
+    </form> -->
+    </div>          
+    <p id="pp"></p>
+
+    <label for="item-name">Item Name: </label>
+    <input id="item-name" type="text" name="item-name">
+    <label for="quantity">Quantity: </label>
+    <input id="quantity" type="number" name="quantity">
+    <label for="item-image">Item Image:</label>
+    <input id="item-image" type="file" name="item-image">
+    <button onclick="sendItem()">Send</button>
+    
+    <div id="items"></div>
+
     </div>
     <br/>
     <br> 
-    <center><button class = "button" onclick="sendMessage()">Save List</button></center>
+    <!-- <center><button class = "button" onclick="saveList()">Save List</button></center> -->
     
-    <div id="chat"></div>
     </div>
 <script src="functions.js"></script>
 </body>
