@@ -19,9 +19,10 @@ def add_paths(router):
     router.add_route(Route("GET", "/login", login))
     router.add_route(Route("GET", "/register", register))
     router.add_route(Route("GET", "/index", index))
-    router.add_route(Route("GET", "/createList", create_list))
+    # router.add_route(Route("GET", "/createList", create_list))
     router.add_route(Route("GET", "/addDeals", add_deals))
     router.add_route(Route("GET", "/onlineUsers", online_users))
+    router.add_route(Route("GET", "/list.", render_list))
 
 
     router.add_route(Route("GET", "/.", four_oh_four))
@@ -29,7 +30,9 @@ def add_paths(router):
 
     
 def check_user_status(request, handler):
-    # check if user is logged in if so direct to home page else direct them to login page.
+    """
+    check if user is logged in if so direct to home page else direct them to login page
+    """
     if log_in(request):
         response = redirect_response("/index", "302 Found")
     else:
@@ -48,14 +51,17 @@ def index(request, handler):
         response = redirect_response("/login", "302 Found")
         handler.request.sendall(response)
         return
-    send_file("public/index.html", "text/html", request, handler)
+    get_list_names = db.get_list_names()
+    content = render_template("public/index.html", {
+        "loop_data": get_list_names})
+    response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
 
 def create_list(request, handler):
     if not log_in(request):
         response = redirect_response("/login", "302 Found")
         handler.request.sendall(response)
         return
-    
     list_items = db.list_grocery_items()
     if(list_items):
         for n in list_items:
@@ -73,7 +79,37 @@ def create_list(request, handler):
         handler.request.sendall(response)
         send_file("public/createList.html", "text/html", request, handler)
         
-
+def render_list(request, handler):
+    # Check if user is logged in
+    if not log_in(request):
+        response = redirect_response("/login", "302 Found")
+        handler.request.sendall(response)
+        return
+    # Then check if the path exist in db
+    path_prefix = '/list'
+    list_name = request.path[request.path.find(path_prefix) + len(path_prefix):]
+    list_name = list_name.replace("/", "") #Security measurement
+    # list_name = secure_html(list_name)
+    print(list_name)
+    print(db.not_a_list(list_name))
+    if db.not_a_list(list_name):
+        response = redirect_response("/index", "302 Found")
+        handler.request.sendall(response)
+        return 
+    list_items = db.retrieve_items(list_name)
+    if len(list_items) != 0:
+        # for n in list_items:
+        content = render_template("public/createList.html", {
+            "list_name": list_name,
+            "loop_data": list_items["items"]})
+        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+        handler.request.sendall(response)
+    else:
+        content = render_template("public/createList.html", {
+            "list_name": list_name,
+            "loop_data": ""})
+        response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
+        handler.request.sendall(response)
 
 
 
@@ -82,7 +118,7 @@ def add_deals(request, handler):
         response = redirect_response("/login", "302 Found")
         handler.request.sendall(response)
         return
-    deals = db.list_all_comments() 
+    deals = db.list_all_deals() 
     print("deals", deals)
     content = render_template("public/addDeals.html", {
         "loop_data": deals})
@@ -112,7 +148,6 @@ def online_users(request, handler):
 def four_oh_four(_, handler):
     response = generate_response(b"The requested content does not exist", "text/plain; charset=utf-8", "404 Not Found")
     handler.request.sendall(response)
-
 
 
 def favicon(request, handler):

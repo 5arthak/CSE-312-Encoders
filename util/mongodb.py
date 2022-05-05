@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import bcrypt
 from hashlib import sha256
-import sys
+# import sys
 
 mongo_client = MongoClient("mongo")
 db = mongo_client["cse312"]
@@ -9,12 +9,14 @@ db = mongo_client["cse312"]
 # MongoDB collections
 users_id_collection = db["id"]
 users_collection = db["users"]
-comments_collection = db["comments"]
+deals_collection = db["deals"]
 chats_collection = db["chats"]
 
 
 grocery_items_id_collection = db["grocery_id"]
 grocery_items_collection = db["grocery_items"]
+grocery_lists_collection = db["grocery_lists"]
+
 
 def add_item(list_name: str, item_name: str, quantity: str):
     quantity_num = int(quantity) if quantity != "" else 0
@@ -46,40 +48,68 @@ def get_next_groceryid(list_name: str):
         return 1
 
 
+# Insert new grocery list
+def insert_new_list(list_name):
+    find_list = grocery_lists_collection.find({"list_name": list_name})
+    find_list = list(find_list)
+    if len((find_list)) == 0:
+        grocery_lists_collection.insert_one({"list_name": list_name})
+        return True
+    return False
 
-# MongoDB for Comments and picture file location
-def insert_comment(comment):
+def insert_grocery_items(items):
+    """
+    Insert items = {"list_name": "grocery_list_name", 
+                      "items": [{
+                          "item_name": name,
+                          "Quantity": quant
+                        },
+                        ]
+                      } to collection
+    """
+    grocery_lists_collection.update_one({"list_name": items["list_name"]}, 
+                                    {"$set": { 'items': items["items"]}})
+
+def not_a_list(list_name):
+    # Returns true if list_name not in database
+    output_list = grocery_lists_collection.find({"list_name": list_name}, {"_id": 0})
+    output_list = list(output_list)
+    if len(output_list) != 0:
+        return False
+    return True
+
+def get_list_names():
+    return list(grocery_lists_collection.find({}, {"_id": 0, "list_name": 1}))
+
+def retrieve_items(list_name):
+    """
+    Return [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
+    """
+    try:
+        grocery_items = grocery_lists_collection.find_one({"list_name": list_name}, {"_id": 0, "items": 1})                
+        return list(grocery_items)
+    except:
+        return {}
+
+
+
+# MongoDB for uploading images and details of a deal
+def insert_deal(deal):
     """
     Insert comment = {"comment": "comment_message", 
                       "img_name": "image1.jpg"
                       } to collection
     """ 
-    comments_collection.insert_one(comment)
-    return comment
+    deals_collection.insert_one(deal)
+    return deal
 
-def list_all_comments():
-    all_comments = comments_collection.find({}, {"_id": 0})
-    return list(all_comments)
-
-
-
-# MongoDB for chat comments featuring username
-def insert_comment(comment):
-    """
-    Insert comment = {"comment": "comment_message", 
-                      "img_name": "image1.jpg"
-                      } to collection
-    """ 
-    comments_collection.insert_one(comment)
-    return comment
-
-def list_all_comments():
-    all_comments = comments_collection.find({}, {"_id": 0})
-    return list(all_comments)
+def list_all_deals():
+    all_deals = deals_collection.find({}, {"_id": 0})
+    return list(all_deals)
 
 
 
-# MongoDB for adding user after registration 
+# Insert registering user 
 def insert_new_user(user_info):
     """
     Insert user_info = {"email": "address", 
@@ -118,15 +148,12 @@ def auth_user_login(user_info):
         return True
     return False
 
-
 def user_logoff(email):
     users_collection.update_one({"email": email}, {"$set": { 'status': False}})
-
 
 def get_online_users():
     find_user_info = users_collection.find({"status": True}, {"_id": 0, 'email': 1, "pronouns": 1})
     return list(find_user_info)
-    
 
 def update_pronouns(email, pronouns):
     users_collection.update_one({"email": email}, {"$set": { 'pronouns': pronouns}})

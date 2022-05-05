@@ -14,7 +14,7 @@
 <body onload="welcome();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo"><a href="/">Encoder's List</a></div> <!-- {{listname}} -->
+        <div class="logo">{{list_name}}</div> <!-- {{listname}} -->
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -40,35 +40,34 @@
         <input type ="text" id="newList-form-name" name="name" cols="40" rows="1"></input><br><br> -->
         <label for="newList-form-comment">Item Name:</label>
         <input type ="text" id="newList-form-item" name="item" cols="40" rows="3"></input><br><br>
-
-        <label for="newList-form-image">Item Image:</label>
-        <input id="newList-form-image" type="file" name="item_upload">
         
-        <input type ="submit" value="Add Image" id="newList-form-image" name="item_upload" cols="40" rows="3"></input><br><br>
-
         <br/>
 
         <label for="newList-form-quantity">Item Quantity:</label>
         <input type ="number" id="newList-form-quantity" name="quantity" cols="40" rows="1"></input><br><br>
+       
+        <br/>
+        
+        <label for="newList-form-image">Item Image:</label>
+        <input id="newList-form-image" type="file" name="item_upload">
+        
+        <input type ="submit" value="Add Image" id="newList-form-image" name="item_upload" cols="40" rows="3"></input><br><br>
 
     <br/><br>
         <input class="button" type="submit" value="Add Item">
         <br><br>
     </form></div>
     <div class = "currentListDiv">
-
         <p class = "list"> Added List Items:<br></p><br>
         {{loop}}
         {{item_name}}
         {{quantity}}
         </br>
         {{end_loop}}
-        
     </div>
-    
     <br/>
-   <br> 
-   <center><button class = "button" onclick="sendMessage()">Save List</button></center>
+    <br> 
+    <center><button class = "button" onclick="sendMessage()">Save List</button></center>
     
     <div id="chat"></div>
     </div>

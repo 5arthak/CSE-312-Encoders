@@ -3,8 +3,7 @@ import sys
 
 from util.router import Router
 from util.request import Request
-# from util.user_paths import add_paths
-from util.static_paths import add_paths as other_paths
+from util.static_paths import add_paths as static_paths
 from util.form_paths import add_paths as form_paths
 from util.login_paths import add_paths as login_paths
 import util.websockets as ws
@@ -18,9 +17,8 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
         self.router = Router()
         form_paths(self.router)
         login_paths(self.router)
-        # add_paths(self.router)
         ws.add_paths(self.router)
-        other_paths(self.router)
+        static_paths(self.router)
         super().__init__(request, client_address, server)
 
     def handle(self):

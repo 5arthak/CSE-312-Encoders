@@ -3,6 +3,9 @@ body {
     color: rgb(0, 0, 0);
     font-family: 'Courier Prime', monospace;
 }
+a, u {
+  text-decoration: none;
+}
 .register{
   display: inline-flex;
   border-radius: 10px;
@@ -141,3 +144,4 @@ body {
     }
   }
    }
+

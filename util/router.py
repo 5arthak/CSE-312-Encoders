@@ -30,10 +30,6 @@ class Route:
             return False
         search_result = re.search("^" + self.path, request.path)
         if search_result:
-            # if search_result.group() == '/' and len(request.path) != 1:
-            #     return False
-            # if search_result.group() == '/users/' and len(request.path) != 1:
-            #     return False
             return True
         else:
             return False
