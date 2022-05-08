@@ -4,6 +4,7 @@ from util.response import redirect_response, generate_response
 from util.router import Route
 import util.mongodb as db
 from util.security import secure_html
+import sys
 
 # from util.request import Request
 
@@ -12,7 +13,18 @@ def add_paths(router):
     router.add_route(Route("POST", "/image-upload", image_upload))
     router.add_route(Route("POST", "/newList-upload", upload_list))
     router.add_route(Route("POST", "/create-new-list", create_new_list))
+    # router.add_route(Route("POST", "/upload_static_file", upload_file))
 
+
+# def upload_file(request, handler):
+#     print("Got request in static files")
+#     print(request.files)
+#     sys.stdout.flush()
+#     sys.stderr.flush()
+#     f = request.files['static_file']
+#     f.save(f.filename)
+#     response = redirect_response("/index") 
+#     handler.request.sendall(response)
     
 # Parser for creating new grocery list
 def create_new_list(request, handler):
@@ -38,7 +50,7 @@ def new_list_parser(request, boundary):
             list_name = secure_html(list_name)
             
             print("list_name", list_name)
-            db.insert_new_list(list_name)
+            db.create_new_list(list_name)
     return True
 
 
@@ -121,6 +133,7 @@ def parse_headers(headers_raw: bytes):
     
 
 def parse_image(image_bytes):
+    print(image_bytes)
     img_name = "image" + str(random.randint(1, 1000000)) + ".jpg"
     with open("public/image/" + img_name, "wb") as output_file:
         output_file.write(image_bytes)

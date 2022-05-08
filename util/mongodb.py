@@ -48,8 +48,23 @@ def get_next_groceryid(list_name: str):
         return 1
 
 
-# Insert new grocery list
-def insert_new_list(list_name):
+# MongoDB for chat comments featuring username
+def insert_chat(chat):
+    """
+    Insert comment = {"username": "username", 
+                      "comment": "hello world"
+                      } to collection
+    """ 
+    chats_collection.insert_one(chat)
+
+def list_all_chats():
+    """ return [{"username": "username", "comment": "hello world"}, ] """
+    all_chats = chats_collection.find({}, {"_id": 0})
+    return list(all_chats)
+
+
+def create_new_list(list_name):
+    # Create new list with list name
     find_list = grocery_lists_collection.find({"list_name": list_name})
     find_list = list(find_list)
     if len((find_list)) == 0:
@@ -57,13 +72,13 @@ def insert_new_list(list_name):
         return True
     return False
 
+# Insert new grocery list
 def insert_grocery_items(items):
     """
     Insert items = {"list_name": "grocery_list_name", 
                       "items": [{
                           "item_name": name,
-                          "Quantity": quant
-                        },
+                          "Quantity": quant },
                         ]
                       } to collection
     """
@@ -93,19 +108,7 @@ def retrieve_items(list_name):
         return []
 
 
-# MongoDB for chat comments featuring username
-def insert_chat(chat):
-    """
-    Insert comment = {"username": "username", 
-                      "comment": "hello world"
-                      } to collection
-    """ 
-    chats_collection.insert_one(chat)
-    # return chat
 
-def list_all_chats():
-    all_chats = chats_collection.find({}, {"_id": 0})
-    return list(all_chats)
 
 # {}
 

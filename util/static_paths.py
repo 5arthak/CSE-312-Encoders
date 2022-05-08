@@ -19,7 +19,6 @@ def add_paths(router):
     router.add_route(Route("GET", "/login", login))
     router.add_route(Route("GET", "/register", register))
     router.add_route(Route("GET", "/index", index))
-    # router.add_route(Route("GET", "/createList", create_list))
     router.add_route(Route("GET", "/addDeals", add_deals))
     router.add_route(Route("GET", "/onlineUsers", online_users))
     router.add_route(Route("GET", "/list.", render_list))
@@ -56,28 +55,6 @@ def index(request, handler):
         "loop_data": get_list_names})
     response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
     handler.request.sendall(response)
-
-# def create_list(request, handler):
-#     if not log_in(request):
-#         response = redirect_response("/login", "302 Found")
-#         handler.request.sendall(response)
-#         return
-#     list_items = db.list_grocery_items()
-#     if(list_items):
-#         for n in list_items:
-#             content = render_template("public/createList.html", {
-#                 "loop_data": n["items"]})
-#         response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-#         handler.request.sendall(response)
-#     else:
-#         list_item = [{'list_name': '', 'items': [{'item_name': '', 'quantity': ''}]}]
-#         for n in list_item:
-#             content = render_template("public/createList.html", {
-#                 "loop_data": n["items"]})
-#         #print(get_list_items, "content", flush=True)
-#         response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
-#         handler.request.sendall(response)
-#         send_file("public/createList.html", "text/html", request, handler)
         
 def render_list(request, handler):
     # Check if user is logged in
@@ -90,8 +67,6 @@ def render_list(request, handler):
     list_name = request.path[request.path.find(path_prefix) + len(path_prefix):]
     list_name = list_name.replace("/", "") #Security measurement
     # list_name = secure_html(list_name)
-    print(list_name)
-    print(db.not_a_list(list_name))
     if db.not_a_list(list_name):
         response = redirect_response("/index", "302 Found")
         handler.request.sendall(response)

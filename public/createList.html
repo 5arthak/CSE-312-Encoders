@@ -40,12 +40,18 @@
     <br>
     <label for="item-image">Item Image:</label>
     <input id="item-image" type="file" name="item-image">
-    <button onclick="sendImage()">Upload Image</button>
-    
+    <button onclick="sendFile()">Upload Image</button>
 
     <br/>
     <div id="items"></div>
+    <script>
+        
+    </script>
+
+
+
     <!-- <center><button class = "button" onclick="saveList()">Save List</button></center> -->
+
     {{loop}}{{empty}}{{end_loop}}
     </div>
 <script src="functions.js"></script>

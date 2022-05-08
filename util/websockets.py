@@ -1,9 +1,10 @@
+from ast import parse
 import hashlib
 import codecs
 import json
 import random
 
-from util.response import generate_response, Header
+from util.response import generate_response
 from server import MyTCPHandler
 # from util.request import Request
 from util.router import Route
@@ -27,18 +28,8 @@ def websocket(request, handler):
                                 [("Sec-WebSocket-Accept", accept), ("Connection", "Upgrade"), ("Upgrade", "websocket")])
 
     handler.request.sendall(response)
-    username = "User" + str(random.randint(0, 10000))
+    username = get_auth_token(request)
     MyTCPHandler.ws_connections[username] = handler
-    MyTCPHandler.ws_conn_list.append(handler)
-    other_index = 0
-    if MyTCPHandler.ws_other.get(0) == None:
-        MyTCPHandler.ws_other[0] = handler
-        other_index = 1
-    elif MyTCPHandler.ws_other.get(1) == None:
-        MyTCPHandler.ws_other[1] = handler
-        other_index = 0
-    print(MyTCPHandler.ws_other)
-    print(MyTCPHandler.ws_connections)
     while True:
         ws_frame_raw = handler.request.recv(1024)
         try:
@@ -48,6 +39,9 @@ def websocket(request, handler):
                     del MyTCPHandler.ws_connections[username]
                     break
                 elif opcode == 129: 
+                    print(ws_frame_raw)
+                    sys.stdout.flush()
+                    sys.stderr.flush()
                 # send frames as needed (broadcast to all connection if its a chat msg or send to the other connection for webrtc)
                     ws_length = ws_frame_raw[1]
                     masking_index = -1
@@ -68,19 +62,42 @@ def websocket(request, handler):
                     payload = ws_frame_raw[masking_index+4:]
                     
                     while ws_length > len(payload):
-                        print(ws_length, len(payload))
                         more_ws_frame_raw = handler.request.recv(1024)
                         payload += more_ws_frame_raw[:]
                     
                     payload_decoded = ''
+                    image_data = b''
+                    image_upload = False
                     for i in range(0, ws_length):
                         frame = payload[i]
-                        char = chr(mask[i % 4] ^ frame)
+                        unmasked = (mask[i % 4] ^ frame)
+                        char = chr(unmasked)
                         payload_decoded += char
+                        if 'image_data":' in str(payload_decoded):
+                            image_upload = True
+                            # print(image_upload, i)
+                            # print(unmasked)
+                            sys.stdout.flush()
+                            sys.stderr.flush()
+                            dat = (to_bin(unmasked)).encode()
+                            print(dat)
+                            image_data += dat
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
-                    if msg_type == "chatMessage":
+                    # print(msg_type, payload_decoded)
+                    print(image_upload)
+                    sys.stdout.flush()
+                    sys.stderr.flush()
+                    if image_upload:
+                        print(image_data)
+                        img_name = parse_image(image_data)
+                        print(img_name)
+                        sys.stdout.flush()
+                        sys.stderr.flush()
+                    if msg_type == "addItem":
                         print(payload_decoded)
+                        sys.stdout.flush()
+                        sys.stderr.flush()
                         payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
@@ -106,10 +123,30 @@ def websocket(request, handler):
                             utf = ord(char)
                             outgoing_bytes.append(utf)
                         outgoing_encoded = bytes(outgoing_bytes)
-                        for tcp in MyTCPHandler.ws_conn_list:
+                        for tcp in MyTCPHandler.ws_connections.values():
                             tcp.request.sendall(outgoing_encoded)
+                            
         except:
             pass
+
+def parse_image(image_bytes):
+    img_name = "list" + str(random.randint(1, 1000000)) + ".jpg"
+    with open("public/image/" + img_name, "wb") as output_file:
+        output_file.write(image_bytes)
+    return img_name
+
+
+def get_auth_token(request):
+    cookie = request.headers.get("Cookie")
+    if cookie != None:
+        cookies = {}
+        cookie = cookie.split(";")
+        for c in cookie:
+            try:
+                cookies[c.split("=")[0].strip()] = c.split("=")[1].strip()
+            except:
+                cookies[c.strip()] = True
+        return cookies.get('auth_token')
     
 
     
@@ -122,7 +159,7 @@ def to_bin(dec):
 def bin_to_int(bin, bytes):
     ints = []
     for x in range(8, len(bin)+1, 8):
-      print(x)
+    #   print(x)
       ints.append(int(bin[x-8:x], 2))
     while len(ints) != bytes:
       ints.insert(0, 0)
