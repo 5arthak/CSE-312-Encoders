@@ -14,7 +14,7 @@
 <body onload="displayList();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
-        <div class="logo">{{list_name}}</div> <!-- {{listname}} -->
+        <div class="logo" id="logo">{{list_name}}</div> <!-- {{listname}} -->
         <!-- NAVIGATION MENU -->
         <ul class="nav-links">
         <!-- USING CHECKBOX HACK -->
@@ -35,12 +35,12 @@
     <input id="item-name" type="text" name="item-name">
     <label for="quantity">Quantity: </label>
     <input id="quantity" type="number" name="quantity">
-    <button onclick="sendItem()">Add Item</button>
-
     <br>
     <label for="item-image">Item Image:</label>
     <input id="item-image" type="file" name="item-image">
-    <button onclick="sendFile()">Upload Image</button>
+
+    <button onclick="sendItem()">Add Item</button>
+    <!-- <button onclick="sendFile()">Upload Image</button> -->
 
     <br/>
     <div id="items"></div>

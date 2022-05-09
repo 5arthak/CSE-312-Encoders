@@ -20,12 +20,7 @@ function sendImage(){
 
 async function sendFile() {
     var file = document.getElementById('item-image').files[0];
-    console.log("SENT FILE: ", file)
-    // var data = image.replace(/^data:image\/\w+;base64,/, "");
-    // var buf = new Buffer(data, 'base64');
-    // fs.writeFile('image.png', buf,function(err, result) {
-    //   if(err){console.log('error', err);}
-    // });
+    // console.log("SENT FILE: ", file)
 
     var reader = new FileReader();
     var rawData = new ArrayBuffer();            
@@ -82,14 +77,64 @@ function sendItem() {
     const itemName = itemNameBox.value;
     const quantityBox = document.getElementById("quantity");
     const quantity = quantityBox.value;
+
+    const logoBox = document.getElementById("logo");
+    const list_name = logoBox.value;
+
+    var file = document.getElementById('item-image').files[0];
+
+
+    var reader = new FileReader();
+    // var rawData = new ArrayBuffer(); 
+    var imageData = ""           
+    reader.loadend = function() {
+        console.log("load completed");
+    } // do nothing
+    reader.onload = function(e) {
+        const rawData = e.target.result;
+        imageData = rawData.replace('data:image/jpeg;base64,', '')
+        console.log(rawData.substring(0, 50));
+        console.log(imageData.substring(0,50));
+    
+        // socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
+
+        const theJson = JSON.stringify({'messageType': 'addItem', 'list_name': list_name, 
+                            'item-name': itemName, 'quantity': quantity, 
+                            'image_data': imageData});
+
+        console.log(theJson);
+        
+        socket.send(theJson);
+
+        alert("the File has been transferred.")
+        return imageData
+        
+    }
+    // console.log("image data is:", imageData)
+    reader.onerror = function(e) {
+        console.log("error");
+		console.log('Error : ' + e.type, "Maybe no image uploaded?");
+        alert("error");
+        // no image file
+	};
+    if (file){
+	    reader.readAsDataURL(file);
+    }
+
     itemNameBox.value = "";
     quantityBox.value = "";
     itemNameBox.focus();
-    theJson = JSON.stringify({'messageType': 'addItem', 'item-name': itemName, 'quantity': quantity})
-    console.log(theJson)
-    if (itemName !== "") {
-        socket.send(theJson);
-    }
+
+    // theJson = JSON.stringify({'messageType': 'addItem', 'item-name': itemName, 
+    //                         'quantity': quantity, 'image_data': imageData});
+
+    // console.log(theJson);
+
+    // if (itemName !== "") {  
+    //     socket.send(theJson);
+    // }
+
+    // else {alert("Please input item name");}
 }
 
 // Renders a new item to the page
