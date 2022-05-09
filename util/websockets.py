@@ -77,19 +77,21 @@ def websocket(request, handler):
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
                     if image_upload:
-                        print(image_data)
+                        # print(image_data)
                         img_name = parse_image(image_data)
                         
                         print(img_name)
                     if msg_type == "addItem":
-                        print(payload_decoded)
+                        # print(payload_decoded)
                         sys.stdout.flush()
                         sys.stderr.flush()
                         payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
                         payload_decoded.pop('messageType')
-                        db.insert_chat(payload_decoded)
+                        list_name = payload_decoded.pop('list_name')
+                        # item = dict with item name and quanityt amt
+                        db.insert_grocery_item(list_name, item=payload_decoded)
 
                         outgoing_bytes = [129]
                         if outgoing_payload_len < 126:
@@ -167,11 +169,13 @@ def test_accept():
     accept = compute_accept(test)
     assert accept == output, "testing accept"
 
-
-def chat_history(_, handler):
+def chat_history(request, handler):
     history = [{"item-name": "peanut", "quantity": 1}, 
                {"item-name": "walnut", "quantity": 3}]
-    history = db.list_all_chats()
+    prefix = "/list"
+    get_list_name = str(request.path[len(prefix):])
+    print(get_list_name)
+    history = db.retrieve_items(get_list_name)
     print(history)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

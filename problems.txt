@@ -1,0 +1,1 @@
+When you want to create a new list you cannot use space nor html character such as <>/&
