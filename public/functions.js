@@ -10,30 +10,6 @@ document.addEventListener("keypress", function (event) {
     }
 });
 
-// async function sendFile() {
-//     var file = document.getElementById('item-image').files[0];
-//     // console.log("SENT FILE: ", file)
-
-//     var reader = new FileReader();
-//     var rawData = new ArrayBuffer();            
-//     reader.loadend = function() {
-//     }
-//     reader.onload = function(e) {
-//         rawData = e.target.result;
-//         raw_split = rawData.replace('data:image/jpeg;base64,', '')
-//         console.log(rawData);
-//         console.log(raw_split);
-//         socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
-//         alert("the File has been transferred.")
-//     }
-//     reader.onerror = function(e) {
-// 		console.log('Error : ' + e.type);
-// 	};
-//     if (file){
-// 	    reader.readAsDataURL(file);
-//     }
-// }
-
 // Read the item name and quanity the user is sending to chat and send it to the server over the WebSocket as a JSON string
 function sendItem() {
     const itemNameBox = document.getElementById("item-name");
@@ -42,37 +18,25 @@ function sendItem() {
     const quantity = quantityBox.value;
     const listnameBox = document.getElementById("list_name");
     const list_name = listnameBox.value;
-    // console.log(list_name)
     var file = document.getElementById('item-image').files[0];
     var reader = new FileReader();
-    // var rawData = new ArrayBuffer(); 
+    var rawData = new ArrayBuffer(); 
     var imageData = ""           
     reader.loadend = function() {
-        // console.log("load completed");
     } // do nothing
     reader.onload = function(e) {
         const rawData = e.target.result;
         imageData = rawData.replace('data:image/jpeg;base64,', '')
-        // console.log(rawData.substring(0, 50));
-        // console.log(imageData.substring(0,50));
-        // socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
         const theJson = JSON.stringify({'messageType': 'addItem', 'list_name': list_name, 
                             'item-name': itemName, 'quantity': quantity, 
                             'image_data': imageData});
-
-        console.log(theJson);
-        
         socket.send(theJson);
-
-        alert("the File has been transferred.")
+        // alert("the File has been transferred.")
         return imageData
-        
     }
     reader.onerror = function(e) {
-        console.log("error");
-		console.log('Error : ' + e.type, "Maybe no image uploaded?");
+		console.log('Error : ' + e.type, "No image uploaded");
         alert("error");
-        // no image file
 	};
     if (file){
 	    reader.readAsDataURL(file);
@@ -86,7 +50,8 @@ function sendItem() {
 // Renders a new item to the page
 function addMessage(addItem) {
     let chat = document.getElementById('items');
-    chat.innerHTML += "<b>" + addItem['item-name'] + "</b>: " + addItem["quantity"] + "<br/>"; //+ "<img src='image/flamingo.jpg'>";
+    chat.innerHTML += "<b>" + addItem['item-name'] + "</b>: " + addItem["quantity"] + "<br/>"+ "<img src='image/"+ addItem['img_name'] + "' class='post_images'> <br/>";
+    console.log(addItem['img_name']);
 }
 
 // called when the page loads to get the chat_history
@@ -111,7 +76,6 @@ function get_chat_history() {
 socket.onmessage = function (ws_message) {
     const message = JSON.parse(ws_message.data);
     const messageType = message.messageType
-
     switch (messageType) {
         case 'addItem':
             addMessage(message);
@@ -122,45 +86,7 @@ socket.onmessage = function (ws_message) {
     }
 }
 
-function startVideo() {
-    const constraints = {video: true, audio: true};
-    navigator.mediaDevices.getUserMedia(constraints).then((myStream) => {
-        const elem = document.getElementById("myVideo");
-        elem.srcObject = myStream;
-
-        // Use Google's public STUN server
-        const iceConfig = {
-            'iceServers': [{'url': 'stun:stun2.1.google.com:19302'}]
-        };
-
-        // create a WebRTC connection object
-        webRTCConnection = new RTCPeerConnection(iceConfig);
-
-        // add your local stream to the connection
-        webRTCConnection.addStream(myStream);
-
-        // when a remote stream is added, display it on the page
-        webRTCConnection.onaddstream = function (data) {
-            const remoteVideo = document.getElementById('otherVideo');
-            remoteVideo.srcObject = data.stream;
-        };
-
-        // called when an ice candidate needs to be sent to the peer
-        webRTCConnection.onicecandidate = function (data) {
-            socket.send(JSON.stringify({'messageType': 'webRTC-candidate', 'candidate': data.candidate}));
-        };
-    })
-}
-
-
-function connectWebRTC() {
-    // create and send an offer
-    webRTCConnection.createOffer().then(webRTCOffer => {
-        socket.send(JSON.stringify({'messageType': 'webRTC-offer', 'offer': webRTCOffer}));
-        webRTCConnection.setLocalDescription(webRTCOffer);
-    });
-}
-
+function welcome() {}
 
 function displayList() {
     document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"

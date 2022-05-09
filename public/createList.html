@@ -37,22 +37,18 @@
     <input id="item-name" type="text" name="item-name">
     <label for="quantity">Quantity: </label>
     <input id="quantity" type="number" name="quantity">
-    <button onclick="sendItem()">Add Item</button>
 
     <br>
     <label for="item-image">Item Image:</label>
     <input id="item-image" type="file" name="item-image">
-    <!-- <button onclick="sendFile()">Upload Image</button> -->
 
+    <button onclick="sendItem()">Add Item</button>
     <br/>
     <div id="items"></div>
     <script>
         
     </script>
 
-
-
-    <!-- <center><button class = "button" onclick="saveList()">Save List</button></center> -->
 
     {{loop}}{{empty}}{{end_loop}}
     </div>

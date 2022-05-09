@@ -10,6 +10,7 @@ from server import MyTCPHandler
 # from util.request import Request
 from util.router import Route
 from util.security import secure_html
+from util.bit_parser import WSBits
 import util.mongodb as db
 import sys
 
@@ -46,22 +47,18 @@ def websocket(request, handler):
                         ws_length_bin = to_bin(ws_frame_raw[2]) + to_bin(ws_frame_raw[3]) + to_bin(ws_frame_raw[4]) + to_bin(ws_frame_raw[5]) + to_bin(ws_frame_raw[6]) + to_bin(ws_frame_raw[7]) + to_bin(ws_frame_raw[8]) + to_bin(ws_frame_raw[9])
                         ws_length = int(str(ws_length_bin), 2)
                         masking_index = 10
-                        
                     elif ws_length == 254: #16 bits
                         ws_length_bin = to_bin(ws_frame_raw[2]) + to_bin(ws_frame_raw[3])
                         ws_length = int(str(ws_length_bin), 2)
                         masking_index = 4
-                        
                     else: #7 bits
                         ws_length = ws_length & 127
                         masking_index = 2
                     mask = [ws_frame_raw[masking_index], ws_frame_raw[masking_index+1], ws_frame_raw[masking_index+2], ws_frame_raw[masking_index+3]]
                     payload = ws_frame_raw[masking_index+4:]
-                    
                     while ws_length > len(payload):
                         more_ws_frame_raw = handler.request.recv(1024)
                         payload += more_ws_frame_raw[:]
-                    
                     payload_decoded = ''
                     image_data = ''
                     for i in range(0, ws_length):
@@ -74,21 +71,23 @@ def websocket(request, handler):
                     image_data = base64.b64decode(image_data)
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
-                    img_name = parse_image(image_data)                        
+                    img_name = parse_image(image_data)   
                     print(img_name)
+                    print("payload_decoded", payload_decoded, flush=True)
                     if msg_type == "addItem":
-                        # print(payload_decoded)
-                        sys.stdout.flush()
-                        sys.stderr.flush()
                         payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
+                        # payload_decoded.pop('messageType')
+                        # payload_decoded.pop('image_data')
+                        list_name = payload_decoded.get('list_name')
+                        payload_decoded['img_name'] = str(img_name)
+                        print("payload_decoded", payload_decoded, flush=True)
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
-                        payload_decoded.pop('messageType')
-                        payload_decoded.pop('image_data')
-                        list_name = payload_decoded.pop('list_name')
-                        # item = dict with item name and quanityt amt
-                        db.insert_grocery_item(list_name, item=payload_decoded)
-                        print(list_name, payload_decoded, flush = True)
+                        
+                        # item = dict with item name and quanity amt
+                        item_decode = {"list_name": list_name, "item-name": payload_decoded['item-name'], "quantity": payload_decoded['quantity'], 'img_name':img_name}
+                        db.insert_grocery_items(item_decode)
+
                         outgoing_bytes = [129]
                         if outgoing_payload_len < 126:
                             outgoing_bytes.append(outgoing_payload_len)
@@ -110,9 +109,10 @@ def websocket(request, handler):
                         outgoing_encoded = bytes(outgoing_bytes)
                         for tcp in MyTCPHandler.ws_connections.values():
                             tcp.request.sendall(outgoing_encoded)
-                            
         except:
             pass
+
+
 
 def parse_image(image_bytes):
     img_name = "list" + str(random.randint(1, 1000000)) + ".jpg"
@@ -132,7 +132,6 @@ def get_auth_token(request):
             except:
                 cookies[c.strip()] = True
         return cookies.get('auth_token')
-    
 
     
 def to_bin(dec):
@@ -144,7 +143,6 @@ def to_bin(dec):
 def bin_to_int(bin, bytes):
     ints = []
     for x in range(8, len(bin)+1, 8):
-    #   print(x)
       ints.append(int(bin[x-8:x], 2))
     while len(ints) != bytes:
       ints.insert(0, 0)
@@ -166,13 +164,12 @@ def test_accept():
     assert accept == output, "testing accept"
 
 def chat_history(request, handler):
-    print(request.path, flush=True)
     history = [{"item-name": "peanut", "quantity": 1}, 
                {"item-name": "walnut", "quantity": 3}]
     prefix = "/list-"
     get_list_name = str(request.path[len(prefix):])
-    print("get_list_name", get_list_name, flush=True)
+    # print("get_list_name", get_list_name, flush=True)
     history = db.retrieve_items(get_list_name)
-    print(history, flush=True)
+    # print("histroy", history, flush=True)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

@@ -12,40 +12,8 @@ users_collection = db["users"]
 deals_collection = db["deals"]
 chats_collection = db["chats"]
 
-
-grocery_items_id_collection = db["grocery_id"]
-grocery_items_collection = db["grocery_items"]
+list_name_collection = db["grocery_items"]
 grocery_lists_collection = db["grocery_lists"]
-
-
-def add_item(list_name: str, item_name: str, quantity: str):
-    quantity_num = int(quantity) if quantity != "" else 0
-    name = {"list_name": list_name}
-    item = {"item_name": item_name,
-            "quantity": str(quantity_num)}
-    # item["id"] = get_next_groceryid(list_name)
-    grocery_list = grocery_items_collection.find_one(name)
-    if grocery_list:
-        grocery_list["items"].append(item)
-        grocery_items_collection.update_one(name, {'$set': {"items": grocery_list["items"]}})
-    else:
-        name["items"] = [item]
-        grocery_items_collection.insert_one(name)
-    return grocery_items_collection.find_one(name)
-
-def list_grocery_items():
-    all_items = grocery_items_collection.find({}, {"_id": 0})
-    return list(all_items)
-
-def get_next_groceryid(list_name: str):
-    id_object = users_id_collection.find_one({"name": list_name})
-    if id_object:
-        next_id = int(id_object["last_id"]) + 1
-        users_id_collection.update_one({"name": list_name}, {'$set': {'last_id': next_id}})
-        return next_id
-    else:
-        users_id_collection.insert_one({"name": list_name, "last_id": 1})
-        return 1
 
 
 # MongoDB for chat comments featuring username
@@ -62,48 +30,48 @@ def list_all_chats():
     all_chats = chats_collection.find({}, {"_id": 0})
     return list(all_chats)
 
-
+# List Stuff, creating list, checking if its a list and getting all the lists names
 def create_new_list(list_name):
-    # Create new list with list name
-    find_list = grocery_lists_collection.find({"list_name": list_name})
+    # Create new list with list name and an empty items list
+    find_list = list_name_collection.find({"list_name": list_name})
     find_list = list(find_list)
     if len((find_list)) == 0:
-        grocery_lists_collection.insert_one({"list_name": list_name})
+        list_name_collection.insert_one({"list_name": list_name})
         return True
     return False
 
-# Insert new grocery list
-def insert_grocery_items(list_name, item):
-    """
-    item = {item_name: name, quantity: 00}
-    adds to the items of list_name
-    """
-    grocery_lists_collection.update_one({"list_name": list_name}, 
-                                    {"$push": { 'items': item}})
-
 def not_a_list(list_name):
     # Returns true if list_name not in database
-    output_list = grocery_lists_collection.find({"list_name": list_name}, {"_id": 0})
+    output_list = list_name_collection.find({"list_name": list_name}, {"_id": 0})
     output_list = list(output_list)
     if len(output_list) != 0:
         return False
     return True
 
 def get_list_names():
-    return list(grocery_lists_collection.find({}, {"_id": 0, "list_name": 1}))
+    return list(list_name_collection.find({}, {"_id": 0, "list_name": 1}))
+
+
+# Insert new grocery list with list name
+def insert_grocery_items(item):
+    """
+    item = {list_name: name, item_name: name, quantity: 00}
+    adds to the items of list_name
+    """
+    grocery_lists_collection.insert_one(item)
 
 def retrieve_items(list_name):
     """
     Return [{'item_name': '', 'quantity': ''}, ]
     """
     try:
-        grocery_items = grocery_lists_collection.find_one({"list_name": list_name}, {"_id": 0, "items": 1})                
+        grocery_items = grocery_lists_collection.find({"list_name": list_name}, {"_id": 0, "list_name": 0})                
         grocery_items = list(grocery_items)
-        return grocery_items[0].get('items')
+        return grocery_items
     except:
         return []
 
-# {}
+
 
 # MongoDB for uploading images and details of a deal
 def insert_deal(deal):

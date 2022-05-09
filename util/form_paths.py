@@ -6,25 +6,14 @@ import util.mongodb as db
 from util.security import secure_html
 import sys
 
-# from util.request import Request
 
 
 def add_paths(router):
     router.add_route(Route("POST", "/image-upload", image_upload))
-    router.add_route(Route("POST", "/newList-upload", upload_list))
+    # router.add_route(Route("POST", "/newList-upload", upload_list))
     router.add_route(Route("POST", "/create-new-list", create_new_list))
     # router.add_route(Route("POST", "/upload_static_file", upload_file))
 
-
-# def upload_file(request, handler):
-#     print("Got request in static files")
-#     print(request.files)
-#     sys.stdout.flush()
-#     sys.stderr.flush()
-#     f = request.files['static_file']
-#     f.save(f.filename)
-#     response = redirect_response("/index") 
-#     handler.request.sendall(response)
     
 # Parser for creating new grocery list
 def create_new_list(request, handler):
@@ -83,44 +72,37 @@ def image_parser(request, boundary):
 
 
 # Parser for uploading list 
-def upload_list(request, handler):
-    content_type = request.headers.get('Content-Type')
-    prefix = 'multipart/form-data; boundary='
-    boundary = "--" + content_type[len(prefix):]
+# def upload_list(request, handler):
+#     content_type = request.headers.get('Content-Type')
+#     prefix = 'multipart/form-data; boundary='
+#     boundary = "--" + content_type[len(prefix):]
 
-    if not list_parser(request.body, boundary.encode()):
-        response = generate_response(b"Requested rejected", "text/plain; charset=utf-8", "403 Forbidden")
-        handler.request.sendall(response)
-        return
-    response = redirect_response("/createList") 
-    handler.request.sendall(response)
+#     if not list_parser(request.body, boundary.encode()):
+#         response = generate_response(b"Requested rejected", "text/plain; charset=utf-8", "403 Forbidden")
+#         handler.request.sendall(response)
+#         return
+#     response = redirect_response("/createList") 
+#     handler.request.sendall(response)
 
-
-def list_parser(request, boundary): # "item", "name", "quantity"
-    content = request.split(boundary)
-    grocery_list = {}
-    for x in range(1, len(content)-1):
-        raw_header = (content[x][2:]).split(b'\r\n\r\n')
-        header = (parse_headers(raw_header[0]))
-        name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
-        body = raw_header[1]
-        if name == '"item"':
-            grocery_list["item_name"] = secure_html(body.decode()).strip()
-        elif name == 'item_upload':
-            grocery_list["item_image"] = parse_image(body)
-        elif name == '"quantity"':
-            grocery_list["quantity"] = secure_html(body.decode()).strip()
-    item_name = grocery_list.get("item_name","")
-    item_image = grocery_list.get("item_image","")
-    quantity = grocery_list.get("quantity","0")
-
-    item_filename = "public/" + "{{list_name}}" + "_" + item_name + ".jpg"
-    with open(item_filename, 'wb') as image_file:
-
-
-        pass
-    db.add_item(item_image, item_name, quantity)
-    return True
+# def list_parser(request, boundary): # "item", "name", "quantity"
+#     content = request.split(boundary)
+#     grocery_list = {}
+#     for x in range(1, len(content)-1):
+#         raw_header = (content[x][2:]).split(b'\r\n\r\n')
+#         header = (parse_headers(raw_header[0]))
+#         name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
+#         body = raw_header[1]
+#         if name == '"item"':
+#             grocery_list["item_name"] = secure_html(body.decode()).strip()
+#         elif name == 'item_upload':
+#             grocery_list["item_image"] = parse_image(body)
+#         elif name == '"quantity"':
+#             grocery_list["quantity"] = secure_html(body.decode()).strip()
+#     item_name = grocery_list.get("item_name","")
+#     item_image = grocery_list.get("item_image","")
+#     quantity = grocery_list.get("quantity","0")
+#     db.add_item(item_image, item_name, quantity)
+#     return True
             
 
 def parse_headers(headers_raw: bytes):

@@ -8,30 +8,22 @@ binary_connection_data = '0010'
 
 class WSBits:
     def __init__(self, rec_websocket_frame: bytes):
-
         self.websocket = {}
-
         self.rec_websocket_frame = rec_websocket_frame
-
         self.curr_ws_framebytes = self.rec_websocket_frame
 
     def getBits(ws_framebytes: bytes):
         bytelen = len(ws_framebytes)
         bitstr = format(int.from_bytes(ws_framebytes,'big'),'b')
         bitstr = bitstr.zfill(bytelen << 3)
-
         return bitstr
 
-
     def parse_opcode(self, ws_framebytes: bytes, popstr: bool = True) -> None:
-
         curr_byte = ws_framebytes[0]
         # print("opcode byte:", curr_byte, flush=True)
         get_opcode = curr_byte & BitsToInt('00001111')
         self.websocket["opcode"] = get_opcode
-
         # byte_str = getBytes(bits_str,1)
-
         # self.websocket["fin"] = byte_str[0]
         # self.websocket["rsv1"] = byte_str[1]
         # self.websocket["rsv2"] = byte_str[2]
