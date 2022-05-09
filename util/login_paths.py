@@ -4,6 +4,7 @@ import util.mongodb as db
 import bcrypt
 import random
 from util.security import secure_html
+import re
 
 def add_paths(router):
     router.add_route(Route("POST", "/registration-form", registration))
