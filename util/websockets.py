@@ -3,6 +3,7 @@ import hashlib
 import codecs
 import json
 import random
+import base64
 
 from util.response import generate_response
 from server import MyTCPHandler
@@ -39,10 +40,6 @@ def websocket(request, handler):
                     del MyTCPHandler.ws_connections[username]
                     break
                 elif opcode == 129: 
-                    print(ws_frame_raw)
-                    sys.stdout.flush()
-                    sys.stderr.flush()
-                # send frames as needed (broadcast to all connection if its a chat msg or send to the other connection for webrtc)
                     ws_length = ws_frame_raw[1]
                     masking_index = -1
                     if ws_length == 255: #64 bits
@@ -66,7 +63,7 @@ def websocket(request, handler):
                         payload += more_ws_frame_raw[:]
                     
                     payload_decoded = ''
-                    image_data = b''
+                    image_data = ''
                     image_upload = False
                     for i in range(0, ws_length):
                         frame = payload[i]
@@ -75,25 +72,15 @@ def websocket(request, handler):
                         payload_decoded += char
                         if 'image_data":' in str(payload_decoded):
                             image_upload = True
-                            # print(image_upload, i)
-                            # print(unmasked)
-                            sys.stdout.flush()
-                            sys.stderr.flush()
-                            dat = (to_bin(unmasked)).encode()
-                            print(dat)
-                            image_data += dat
+                            image_data += char
+                    image_data = base64.b64decode(image_data)
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
-                    # print(msg_type, payload_decoded)
-                    print(image_upload)
-                    sys.stdout.flush()
-                    sys.stderr.flush()
                     if image_upload:
                         print(image_data)
                         img_name = parse_image(image_data)
+                        
                         print(img_name)
-                        sys.stdout.flush()
-                        sys.stderr.flush()
                     if msg_type == "addItem":
                         print(payload_decoded)
                         sys.stdout.flush()
