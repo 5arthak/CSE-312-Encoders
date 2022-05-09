@@ -18,7 +18,6 @@ def registration(request, handler):
     """
     encrypted_user_info = multipart_parser(request)
     if(password_strength(encrypted_user_info["pwd"])):
-        print("in here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", flush=True)
         encrypted_user_info["pwd"] = bcrypt.hashpw(bytes(encrypted_user_info["pwd"], 'utf-8'), bcrypt.gensalt())
         encrypted_user_info["pronouns"] = ''
         new_user = db.insert_new_user(encrypted_user_info)
@@ -153,11 +152,8 @@ def parse_cookie(cookie):
 def password_strength(pwd):
     if(len(pwd)>=8):
         if(bool(re.match('((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,30})',pwd))==True):
-            print("The password is strong")
             return True
         elif(bool(re.match('((\d*)([a-z]*)([A-Z]*)([!@#$%^&*]*).{8,30})',pwd))==True):
-            print("The password is weak")
             return False
     else:
-        print("You have entered an invalid password.")
         return False
