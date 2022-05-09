@@ -20,24 +20,34 @@ function sendImage(){
 
 async function sendFile() {
     var file = document.getElementById('item-image').files[0];
-    console.log(file)
+    console.log("SENT FILE: ", file)
+    // var data = image.replace(/^data:image\/\w+;base64,/, "");
+    // var buf = new Buffer(data, 'base64');
+    // fs.writeFile('image.png', buf,function(err, result) {
+    //   if(err){console.log('error', err);}
+    // });
+
     var reader = new FileReader();
     var rawData = new ArrayBuffer();            
     reader.loadend = function() {
     }
     reader.onload = function(e) {
         rawData = e.target.result;
-        console.log(e.target.result);
-        socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': rawData}));
+        raw_split = rawData.replace('data:image/jpeg;base64,', '')
+        console.log(rawData);
+        console.log(raw_split);
+        socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
         alert("the File has been transferred.")
     }
     reader.onerror = function(e) {
 		console.log('Error : ' + e.type);
 	};
     if (file){
-	    reader.readAsBinaryString(file);
+	    reader.readAsDataURL(file);
     }
 }
+
+
 
 // async function sendFile(){
 //     let formData = new FormData();
