@@ -16,7 +16,7 @@ import sys
 
 def add_paths(router):
     router.add_route(Route("GET", "/websocket", websocket))
-    router.add_route(Route("GET", "/chat-history", chat_history))
+    router.add_route(Route("GET", "/list-.", chat_history))
 
 
 def websocket(request, handler):
@@ -64,23 +64,18 @@ def websocket(request, handler):
                     
                     payload_decoded = ''
                     image_data = ''
-                    image_upload = False
                     for i in range(0, ws_length):
                         frame = payload[i]
                         unmasked = (mask[i % 4] ^ frame)
                         char = chr(unmasked)
                         payload_decoded += char
                         if 'image_data":' in str(payload_decoded):
-                            image_upload = True
                             image_data += char
                     image_data = base64.b64decode(image_data)
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
-                    if image_upload:
-                        # print(image_data)
-                        img_name = parse_image(image_data)
-                        
-                        print(img_name)
+                    img_name = parse_image(image_data)                        
+                    print(img_name)
                     if msg_type == "addItem":
                         # print(payload_decoded)
                         sys.stdout.flush()
@@ -89,10 +84,11 @@ def websocket(request, handler):
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
                         payload_decoded.pop('messageType')
+                        payload_decoded.pop('image_data')
                         list_name = payload_decoded.pop('list_name')
                         # item = dict with item name and quanityt amt
                         db.insert_grocery_item(list_name, item=payload_decoded)
-
+                        print(list_name, payload_decoded, flush = True)
                         outgoing_bytes = [129]
                         if outgoing_payload_len < 126:
                             outgoing_bytes.append(outgoing_payload_len)
@@ -170,12 +166,13 @@ def test_accept():
     assert accept == output, "testing accept"
 
 def chat_history(request, handler):
+    print(request.path, flush=True)
     history = [{"item-name": "peanut", "quantity": 1}, 
                {"item-name": "walnut", "quantity": 3}]
-    prefix = "/list"
+    prefix = "/list-"
     get_list_name = str(request.path[len(prefix):])
-    print(get_list_name)
+    print("get_list_name", get_list_name, flush=True)
     history = db.retrieve_items(get_list_name)
-    print(history)
+    print(history, flush=True)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

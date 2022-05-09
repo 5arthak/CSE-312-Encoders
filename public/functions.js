@@ -10,65 +10,28 @@ document.addEventListener("keypress", function (event) {
     }
 });
 
-function sendImage(){
-    const imageBox = document.getElementById("item-image");
-    const image = imageBox.value.split('fakepath\\')[1];
-    console.log(image);
-    imageBox.value = "";
-    // , 'image': image
-}
+// async function sendFile() {
+//     var file = document.getElementById('item-image').files[0];
+//     // console.log("SENT FILE: ", file)
 
-async function sendFile() {
-    var file = document.getElementById('item-image').files[0];
-    // console.log("SENT FILE: ", file)
-
-    var reader = new FileReader();
-    var rawData = new ArrayBuffer();            
-    reader.loadend = function() {
-    }
-    reader.onload = function(e) {
-        rawData = e.target.result;
-        raw_split = rawData.replace('data:image/jpeg;base64,', '')
-        console.log(rawData);
-        console.log(raw_split);
-        socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
-        alert("the File has been transferred.")
-    }
-    reader.onerror = function(e) {
-		console.log('Error : ' + e.type);
-	};
-    if (file){
-	    reader.readAsDataURL(file);
-    }
-}
-
-
-
-// async function sendFile(){
-//     let formData = new FormData();
-//     formData.append('file', imageupload.files[0]);
-//     await fetch('/image-upload', {method: "POST", body: formData});
-//     alert("the File has been transferred.");
-//     socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': "img_nmae.jpg"}));
-// }
-
-// function uploadFile(form)
-// {
-//  const formData = new FormData(form);
-//  var oOutput = document.getElementById("static_file_response")
-//  var oReq = new XMLHttpRequest();
-//      oReq.open("POST", "upload_static_file", true);
-//  oReq.onload = function(oEvent) {
-//      if (oReq.status == 200) {
-//        oOutput.innerHTML = "Uploaded!";
-//        console.log(oReq.response)
-//      } else {
-//        oOutput.innerHTML = "Error occurred when trying to upload your file.<br \/>";
-//      }
-//      };
-//  oOutput.innerHTML = "Sending file!";
-//  console.log("Sending file!")
-//  oReq.send(formData);
+//     var reader = new FileReader();
+//     var rawData = new ArrayBuffer();            
+//     reader.loadend = function() {
+//     }
+//     reader.onload = function(e) {
+//         rawData = e.target.result;
+//         raw_split = rawData.replace('data:image/jpeg;base64,', '')
+//         console.log(rawData);
+//         console.log(raw_split);
+//         socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
+//         alert("the File has been transferred.")
+//     }
+//     reader.onerror = function(e) {
+// 		console.log('Error : ' + e.type);
+// 	};
+//     if (file){
+// 	    reader.readAsDataURL(file);
+//     }
 // }
 
 // Read the item name and quanity the user is sending to chat and send it to the server over the WebSocket as a JSON string
@@ -77,27 +40,22 @@ function sendItem() {
     const itemName = itemNameBox.value;
     const quantityBox = document.getElementById("quantity");
     const quantity = quantityBox.value;
-
-    const logoBox = document.getElementById("logo");
-    const list_name = logoBox.value;
-
+    const listnameBox = document.getElementById("list_name");
+    const list_name = listnameBox.value;
+    // console.log(list_name)
     var file = document.getElementById('item-image').files[0];
-
-
     var reader = new FileReader();
     // var rawData = new ArrayBuffer(); 
     var imageData = ""           
     reader.loadend = function() {
-        console.log("load completed");
+        // console.log("load completed");
     } // do nothing
     reader.onload = function(e) {
         const rawData = e.target.result;
         imageData = rawData.replace('data:image/jpeg;base64,', '')
-        console.log(rawData.substring(0, 50));
-        console.log(imageData.substring(0,50));
-    
+        // console.log(rawData.substring(0, 50));
+        // console.log(imageData.substring(0,50));
         // socket.send(theJson = JSON.stringify({'messageType': 'imageUpload', 'image_data': raw_split}));
-
         const theJson = JSON.stringify({'messageType': 'addItem', 'list_name': list_name, 
                             'item-name': itemName, 'quantity': quantity, 
                             'image_data': imageData});
@@ -110,7 +68,6 @@ function sendItem() {
         return imageData
         
     }
-    // console.log("image data is:", imageData)
     reader.onerror = function(e) {
         console.log("error");
 		console.log('Error : ' + e.type, "Maybe no image uploaded?");
@@ -124,17 +81,6 @@ function sendItem() {
     itemNameBox.value = "";
     quantityBox.value = "";
     itemNameBox.focus();
-
-    // theJson = JSON.stringify({'messageType': 'addItem', 'item-name': itemName, 
-    //                         'quantity': quantity, 'image_data': imageData});
-
-    // console.log(theJson);
-
-    // if (itemName !== "") {  
-    //     socket.send(theJson);
-    // }
-
-    // else {alert("Please input item name");}
 }
 
 // Renders a new item to the page
@@ -145,6 +91,8 @@ function addMessage(addItem) {
 
 // called when the page loads to get the chat_history
 function get_chat_history() {
+    const listnameBox = document.getElementById("list_name");
+    const list_name = listnameBox.value;
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
@@ -154,7 +102,7 @@ function get_chat_history() {
             }
         }
     };
-    request.open("GET", "/chat-history");
+    request.open("GET", "/list-"+list_name);
     request.send();
 }
 
@@ -167,7 +115,7 @@ socket.onmessage = function (ws_message) {
     switch (messageType) {
         case 'addItem':
             addMessage(message);
-            console.log(message)
+            console.log("messae",message)
             break;
         default:
             console.log("received an invalid WS messageType");
@@ -213,14 +161,6 @@ function connectWebRTC() {
     });
 }
 
-function welcome() {
-    // document.getElementById("paragraph").innerHTML += "<br/>This text was added by JavaScript 🦆"
-
-    // get_chat_history()
-
-    // use this line to start your video without having to click a button. Helpful for debugging
-    // startVideo();
-}
 
 function displayList() {
     document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"

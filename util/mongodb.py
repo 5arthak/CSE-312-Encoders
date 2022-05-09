@@ -73,17 +73,13 @@ def create_new_list(list_name):
     return False
 
 # Insert new grocery list
-def insert_grocery_items(items):
+def insert_grocery_items(list_name, item):
     """
-    Insert items = {"list_name": "grocery_list_name", 
-                      "items": [{
-                          "item_name": name,
-                          "Quantity": quant },
-                        ]
-                      } to collection
+    item = {item_name: name, quantity: 00}
+    adds to the items of list_name
     """
-    grocery_lists_collection.update_one({"list_name": items["list_name"]}, 
-                                    {"$set": { 'items': items["items"]}})
+    grocery_lists_collection.update_one({"list_name": list_name}, 
+                                    {"$push": { 'items': item}})
 
 def not_a_list(list_name):
     # Returns true if list_name not in database
@@ -106,9 +102,6 @@ def retrieve_items(list_name):
         return grocery_items[0].get('items')
     except:
         return []
-
-
-
 
 # {}
 
