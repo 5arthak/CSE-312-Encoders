@@ -24,10 +24,13 @@ def registration(request, handler):
         if new_user:
             response = redirect_response("/login")
         else:
-            response = generate_response(b"Username unavailable, try again", "text/plain; charset=utf-8", "404 Not Found")
+            response = generate_response(b"Username unavailable, try again", "text/plain; charset=utf-8", "404 Not Found",
+                                    [("Set-Cookie", "auth_token="";expires=Thu, 01 Jan 1970 00:00:00 GMT;HttpOnly")])
+
         handler.request.sendall(response)
     else:
-        response = generate_response(b"You have entered an invalid password. Please create a stronger password.", "text/plain; charset=utf-8", "400 Bad request")
+        response = generate_response(b"You have entered an invalid password. Please create a stronger password.", "text/plain; charset=utf-8", "400 Bad request",
+                                    [("Set-Cookie", "auth_token="";expires=Thu, 01 Jan 1970 00:00:00 GMT;HttpOnly")])
         handler.request.sendall(response)
 
 
