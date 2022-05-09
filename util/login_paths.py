@@ -13,17 +13,21 @@ def add_paths(router):
 
 def registration(request, handler):
     """
-    Add username, salted password, and user's auth_token in db    
+    Add username, salted password, and user's auth_token in db
     """
     encrypted_user_info = multipart_parser(request)
-    encrypted_user_info["pwd"] = bcrypt.hashpw(bytes(encrypted_user_info["pwd"], 'utf-8'), bcrypt.gensalt())
-    encrypted_user_info["pronouns"] = ''
-    new_user = db.insert_new_user(encrypted_user_info)
-    if new_user:
-        response = redirect_response("/login")
+    if(password_strength(encrypted_user_info["pwd"])):
+        encrypted_user_info["pwd"] = bcrypt.hashpw(bytes(encrypted_user_info["pwd"], 'utf-8'), bcrypt.gensalt())
+        encrypted_user_info["pronouns"] = ''
+        new_user = db.insert_new_user(encrypted_user_info)
+        if new_user:
+            response = redirect_response("/login")
+        else:
+            response = generate_response(b"Username unavailable, try again", "text/plain; charset=utf-8", "404 Not Found")
+        handler.request.sendall(response)
     else:
-        response = generate_response(b"Username unavailable, try again", "text/plain; charset=utf-8", "404 Not Found")
-    handler.request.sendall(response)
+        response = generate_response(b"You have entered an invalid password. Please create a stronger password.", "text/plain; charset=utf-8", "400 Bad request")
+        handler.request.sendall(response)
 
 
 def login(request, handler):
@@ -140,3 +144,12 @@ def parse_cookie(cookie):
     return cookies
 
     
+
+def password_strength(pwd):
+    if(len(pwd)>=8):
+        if(bool(re.match('((?=.\d)(?=.[a-z])(?=.[A-Z])(?=.[!@#$%^&]).{8,30})',pwd))==True):
+            return True
+        elif(bool(re.match('((\d)([a-z])([A-Z])([!@#$%^&]).{8,30})',pwd))==True):
+            return False
+    else:
+        return False
