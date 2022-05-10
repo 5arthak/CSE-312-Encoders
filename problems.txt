@@ -1,1 +1,3 @@
 When you want to create a new list you cannot use space nor html character such as <>/&
+
+When you add an item on one list it will show up temporarly in the other list if open bc of websocket

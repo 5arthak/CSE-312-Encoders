@@ -10,24 +10,36 @@ document.addEventListener("keypress", function (event) {
     }
 });
 
+function sendDM(){
+    const userEmail = document.getElementById("user_email").value;
+    const toUserBox = document.getElementById("to-user");
+    const toUser = toUserBox.value;
+    const messageBox = document.getElementById("dm");
+    const message = messageBox.value;
+    const theJson = JSON.stringify({'messageType': 'DirectMessage', 'from': userEmail, 
+                            'to': toUser, 'message': message});
+    socket.send(theJson);
+    toUserBox.value = "";
+    messageBox.value = "";
+    toUserBox.focus();
+}
+
 // Read the item name and quanity the user is sending to chat and send it to the server over the WebSocket as a JSON string
 function sendItem() {
     const itemNameBox = document.getElementById("item-name");
     const itemName = itemNameBox.value;
     const quantityBox = document.getElementById("quantity");
     const quantity = quantityBox.value;
-    const listnameBox = document.getElementById("list_name");
-    const list_name = listnameBox.value;
+    const listName = document.getElementById("list_name").value;
     var file = document.getElementById('item-image').files[0];
     var reader = new FileReader();
-    var rawData = new ArrayBuffer(); 
     var imageData = ""           
     reader.loadend = function() {
     } // do nothing
     reader.onload = function(e) {
         const rawData = e.target.result;
         imageData = rawData.replace('data:image/jpeg;base64,', '')
-        const theJson = JSON.stringify({'messageType': 'addItem', 'list_name': list_name, 
+        const theJson = JSON.stringify({'messageType': 'addItem', 'list_name': listName, 
                             'item-name': itemName, 'quantity': quantity, 
                             'image_data': imageData});
         socket.send(theJson);
@@ -56,8 +68,7 @@ function addMessage(addItem) {
 
 // called when the page loads to get the chat_history
 function get_chat_history() {
-    const listnameBox = document.getElementById("list_name");
-    const list_name = listnameBox.value;
+    const list_name = document.getElementById("list_name").value;
     const request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
@@ -92,7 +103,4 @@ function displayList() {
     document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"
 
     get_chat_history()
-
-    // use this line to start your video without having to click a button. Helpful for debugging
-    // startVideo();
 }

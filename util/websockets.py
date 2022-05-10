@@ -1,4 +1,3 @@
-from ast import parse
 import hashlib
 import codecs
 import json
@@ -7,12 +6,9 @@ import base64
 
 from util.response import generate_response
 from server import MyTCPHandler
-# from util.request import Request
 from util.router import Route
 from util.security import secure_html
-from util.bit_parser import WSBits
 import util.mongodb as db
-import sys
 
 
 def add_paths(router):
@@ -22,13 +18,11 @@ def add_paths(router):
 
 def websocket(request, handler):
     assert request.headers.get('Upgrade') == "websocket"
-
     websocket_key = request.headers.get('Sec-WebSocket-Key')
     accept = compute_accept(websocket_key)
     test_accept()
     response = generate_response(b'', "NA", "101 Switching Protocols", 
                                 [("Sec-WebSocket-Accept", accept), ("Connection", "Upgrade"), ("Upgrade", "websocket")])
-
     handler.request.sendall(response)
     username = get_auth_token(request)
     MyTCPHandler.ws_connections[username] = handler
@@ -72,45 +66,34 @@ def websocket(request, handler):
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
                     img_name = parse_image(image_data)   
-                    print(img_name)
-                    print("payload_decoded", payload_decoded, flush=True)
+                    # print(img_name)
+                    # print("payload_decoded", payload_decoded, flush=True)
                     if msg_type == "addItem":
                         payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
-                        # payload_decoded.pop('messageType')
-                        # payload_decoded.pop('image_data')
                         list_name = payload_decoded.get('list_name')
                         payload_decoded['img_name'] = str(img_name)
                         print("payload_decoded", payload_decoded, flush=True)
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
-                        
-                        # item = dict with item name and quanity amt
-                        item_decode = {"list_name": list_name, "item-name": payload_decoded['item-name'], "quantity": payload_decoded['quantity'], 'img_name':img_name}
-                        db.insert_grocery_items(item_decode)
-
-                        outgoing_bytes = [129]
-                        if outgoing_payload_len < 126:
-                            outgoing_bytes.append(outgoing_payload_len)
-                        elif outgoing_payload_len >=126 and outgoing_payload_len < 65536:
-                            outgoing_bytes.append(126)
-                            bin = str(to_bin(outgoing_payload_len))
-                            ins = bin_to_int(bin, 2)
-                            for x in ins:
-                                outgoing_bytes.append(x)
-                        else:
-                            outgoing_bytes.append(127)
-                            bin = str(to_bin(outgoing_payload_len))
-                            ins = bin_to_int(bin, 8)
-                            for x in ins:
-                                outgoing_bytes.append(x)
-                        for char in outgoing_payload:
-                            utf = ord(char)
-                            outgoing_bytes.append(utf)
-                        outgoing_encoded = bytes(outgoing_bytes)
+                        new_item = {"list_name": list_name, "item-name": payload_decoded['item-name'], "quantity": payload_decoded['quantity'], 'img_name':img_name}
+                        db.insert_grocery_items(new_item)
+                        outgoing_encoded = create_outgoing_payload(outgoing_payload_len, outgoing_payload)
                         for tcp in MyTCPHandler.ws_connections.values():
                             tcp.request.sendall(outgoing_encoded)
+                    elif msg_type == "DirectMessage":
+                        payload_decoded['to'] = secure_html(payload_decoded['to'])
+                        to_user = payload_decoded['to']
+                        payload_decoded['from'] = secure_html(payload_decoded['from'])
+                        payload_decoded['message'] = secure_html(payload_decoded['message'])
+                        outgoing_payload = json.dumps(payload_decoded)
+                        outgoing_payload_len = len(outgoing_payload)
+                        # Create outgoing package
+                        outgoing_encoded = create_outgoing_payload(outgoing_payload_len, outgoing_payload)
+                        send_to_tcp = MyTCPHandler.ws_connections[to_user]
+                        send_to_tcp.request.sendall(outgoing_encoded)
         except:
             pass
+
 
 
 
@@ -148,7 +131,6 @@ def bin_to_int(bin, bytes):
       ints.insert(0, 0)
     return ints
 
-
 def compute_accept(websocket_key):
     websocket_key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
     websocket_key = websocket_key.encode()
@@ -163,13 +145,36 @@ def test_accept():
     accept = compute_accept(test)
     assert accept == output, "testing accept"
 
+def create_outgoing_payload(outgoing_payload_len, outgoing_payload):
+    outgoing_bytes = [129]
+    if outgoing_payload_len < 126:
+        outgoing_bytes.append(outgoing_payload_len)
+    elif outgoing_payload_len >=126 and outgoing_payload_len < 65536:
+        outgoing_bytes.append(126)
+        bin = str(to_bin(outgoing_payload_len))
+        ins = bin_to_int(bin, 2)
+        for x in ins:
+            outgoing_bytes.append(x)
+    else:
+        outgoing_bytes.append(127)
+        bin = str(to_bin(outgoing_payload_len))
+        ins = bin_to_int(bin, 8)
+        for x in ins:
+            outgoing_bytes.append(x)
+    for char in outgoing_payload:
+        utf = ord(char)
+        outgoing_bytes.append(utf)
+    outgoing_encoded = bytes(outgoing_bytes)
+    return outgoing_encoded
+
+
 def chat_history(request, handler):
     history = [{"item-name": "peanut", "quantity": 1}, 
                {"item-name": "walnut", "quantity": 3}]
     prefix = "/list-"
     get_list_name = str(request.path[len(prefix):])
-    # print("get_list_name", get_list_name, flush=True)
     history = db.retrieve_items(get_list_name)
-    # print("histroy", history, flush=True)
+    print("histroy", history, flush=True)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)
+
