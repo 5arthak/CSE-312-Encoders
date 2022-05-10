@@ -29,14 +29,18 @@
         </div>
         </ul>
     </nav>
+    <h2>Send message</h2>
     <h1>{{user_email}} (You) </h1>
-    <form action="/pronouns" id="pronouns" method="post" enctype="multipart/form-data">
-        <br>
-        <label for="pronouns">Pronouns: </label><br>
-        <input id="pronouns" name="pronouns" placeholder = "{{your_pronouns}}"" type="text" required>
-        <input type="submit" value="Update">
-        <br>
-    </form>
+    <input id="user_email" value="{{user_email}}" hidden>
+    <label for="to-user">To User: </label>
+    <input id="to-user" type="text" name="to-user">
+    <br>
+    <label for="dm">Message: </label>
+    <input id="dm" type="test" name="dm">
+    <br>
+    <button onclick="sendItem()">Send Private Message</button>
+    <br>
+
     <h2>Online Users</h2>
     {{loop}}
         <a href="/chat">{{email}}({{pronouns}})</a>

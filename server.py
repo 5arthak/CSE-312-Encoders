@@ -28,7 +28,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
             if len(received_data) == 0:
                 return
             print("\n- - - received data - - -")
-            print(received_data)
+            # print(received_data)
             print("- - - end of data - - -")
             if len(all_data) == 0:
                 request = Request(received_data)
