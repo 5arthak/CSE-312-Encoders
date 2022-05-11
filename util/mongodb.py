@@ -15,6 +15,38 @@ chats_collection = db["chats"]
 list_name_collection = db["grocery_items"]
 grocery_lists_collection = db["grocery_lists"]
 
+users_messages = db["messages_of_user"]
+
+def add_message(username: str, chat_message: str, sent_by: str):
+    ''' add a message to username's chat db'''
+
+    msg_dict = {"message": chat_message, "sent_by": sent_by}
+
+    get_user = users_messages.find_one({"username": username}, {"_id": 0})
+
+    if not get_user:
+        users_messages.insert_one({"username": username, "messages": list(msg_dict)})
+
+    else:
+        user_msgs = get_user.get("messages", [])
+        user_msgs.append(msg_dict)
+
+        users_messages.update_one({"username": username}, {'set': {"messages": user_msgs}})
+
+
+    return
+
+def get_user_messages(username: str):
+    '''gets messages of the given username'''
+
+    get_user = users_messages.find_one({"username": username}, {"_id": 0})
+
+    if get_user:
+        user_msgs = get_user.get("messsages", [])
+        return list(user_msgs)
+
+    return list()
+
 
 # MongoDB for chat comments featuring username
 def insert_chat(chat):
