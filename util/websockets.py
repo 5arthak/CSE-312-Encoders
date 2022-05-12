@@ -28,7 +28,9 @@ def websocket(request, handler):
     response = generate_response(b'', "NA", "101 Switching Protocols", 
                                 [("Sec-WebSocket-Accept", accept), ("Connection", "Upgrade"), ("Upgrade", "websocket")])
     handler.request.sendall(response)
-    username = get_auth_token(request)
+    user_auth_token = get_auth_token(request)
+    username = db.user_token(user_auth_token)[0]['email']
+    print(username, flush=True)
     MyTCPHandler.ws_connections[username] = handler
     while True:
         ws_frame_raw = handler.request.recv(1024)
@@ -85,8 +87,8 @@ def websocket(request, handler):
                         for tcp in MyTCPHandler.ws_connections.values():
                             tcp.request.sendall(outgoing_encoded)
                     elif msg_type == "DirectMessage":
-                        payload_decoded['to'] = secure_html(payload_decoded['to']) # receiver?
-                        payload_decoded['from'] = secure_html(payload_decoded['from']) # sent from?
+                        payload_decoded['to'] = secure_html(payload_decoded['to']) # receiver
+                        payload_decoded['from'] = secure_html(payload_decoded['from']) # sent from
                         payload_decoded['message'] = secure_html(payload_decoded['message']) # the msg
 # {'messageType': 'DirectMessage', 'from': 'hi@123.com', 'to': 'koreyliu@buffalo.edu', 'message': 'hello!'}
                         # print(payload_decoded,flush=True)
