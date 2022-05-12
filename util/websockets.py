@@ -15,6 +15,10 @@ def add_paths(router):
     router.add_route(Route("GET", "/websocket", websocket))
     router.add_route(Route("GET", "/list-.", chat_history))
 
+    router.add_route(Route("GET","/chat-.", get_chatOf))
+
+    # router.add_route(Route("GET", "/"))
+
 
 def websocket(request, handler):
     assert request.headers.get('Upgrade') == "websocket"
@@ -81,16 +85,36 @@ def websocket(request, handler):
                         for tcp in MyTCPHandler.ws_connections.values():
                             tcp.request.sendall(outgoing_encoded)
                     elif msg_type == "DirectMessage":
-                        payload_decoded['to'] = secure_html(payload_decoded['to'])
-                        to_user = payload_decoded['to']
-                        payload_decoded['from'] = secure_html(payload_decoded['from'])
-                        payload_decoded['message'] = secure_html(payload_decoded['message'])
+                        payload_decoded['to'] = secure_html(payload_decoded['to']) # receiver?
+                        payload_decoded['from'] = secure_html(payload_decoded['from']) # sent from?
+                        payload_decoded['message'] = secure_html(payload_decoded['message']) # the msg
+# {'messageType': 'DirectMessage', 'from': 'hi@123.com', 'to': 'koreyliu@buffalo.edu', 'message': 'hello!'}
+                        # print(payload_decoded,flush=True)
+                        to_user, from_user, msg = payload_decoded['to'], payload_decoded["from"], payload_decoded["message"]
+                        print("info:", to_user, from_user, msg, flush=True)
+                        db.add_message(to_user, msg, from_user)
+                        db.add_message(from_user, msg, from_user)
+                        # would then use db.get_user_messages to get user's messages
+
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
                         # Create outgoing package
                         outgoing_encoded = create_outgoing_payload(outgoing_payload_len, outgoing_payload)
-                        send_to_tcp = MyTCPHandler.ws_connections[to_user]
-                        send_to_tcp.request.sendall(outgoing_encoded)
+                        print("ws to send:", outgoing_encoded, flush=True)
+
+                        print("tcps:", MyTCPHandler.ws_connections,flush=True)
+                        # tcps are dicts from the user_token -> username, 
+                        # '683815602': <__main__.MyTCPHandler object at 0x7fc1224fc9a0>, '660810313': <__main__.MyTCPHandler object at 0x7fc1224fe1a0>
+                        # need to get token given username and send it
+                        # to_user and from_user are strings of the username
+                        
+                        tcps_to_send = [MyTCPHandler.ws_connections[to_user], 
+                                        MyTCPHandler.ws_connections[from_user]]
+
+                        # send_to_tcp = MyTCPHandler.ws_connections[to_user]
+                        # send_to_tcp.request.sendall(outgoing_encoded)
+                        for tcp in tcps_to_send:
+                            tcp.request.sendall(outgoing_encoded)
         except:
             pass
 
@@ -176,5 +200,19 @@ def chat_history(request, handler):
     history = db.retrieve_items(get_list_name)
     print("histroy", history, flush=True)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
+
+
+def get_chatOf(request, handler):
+
+    prefix = "/chat-"
+
+    get_username = str(request.path[len(prefix): ])
+
+    user_chats = db.get_user_messages(get_username)
+
+    print("users:", get_username, user_chats, flush=True)
+
+    response = generate_response(json.dumps(user_chats).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)
 

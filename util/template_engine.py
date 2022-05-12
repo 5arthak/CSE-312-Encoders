@@ -31,3 +31,23 @@ def render_loop(template, data):
 
         final_content = template[:start_index] + loop_content + template[end_index + len(loop_end_tag):]
         return final_content
+    
+
+def render_msg_loop(template, data):
+    ''' used for onlineUsers / for dms'''
+    if "loop_msgs" in data:
+        loop_start_tag = "{{loop_msg}}"
+        loop_end_tag = "{{end_loop_msg}}"
+
+        start_index = template.find(loop_start_tag)
+        end_index = template.find(loop_end_tag)       
+
+        loop_template = template[start_index + len(loop_start_tag): end_index]
+        loop_data = data["loop_msgs"] 
+
+        loop_content = ""
+        for single_piece_of_content in loop_data:
+            loop_content += replace_placeholders(loop_template, single_piece_of_content)
+
+        final_content = template[:start_index] + loop_content + template[end_index + len(loop_end_tag):]
+        return final_content

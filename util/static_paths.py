@@ -55,7 +55,8 @@ def index(request, handler):
         "loop_data": get_list_names})
     response = generate_response(content.encode(), "text/html; charset=utf-8", "200 OK")
     handler.request.sendall(response)
-        
+
+
 def render_list(request, handler):
     # Check if user is logged in
     if not log_in(request):

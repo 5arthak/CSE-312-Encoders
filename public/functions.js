@@ -6,7 +6,11 @@ let webRTCConnection;
 // Allow users to send messages by pressing enter instead of clicking the Send button
 document.addEventListener("keypress", function (event) {
     if (event.code === "Enter") {
-        sendItem();
+        const window_path = window.location.pathname.toString();
+        if 
+        (window_path.startsWith("/onlineUsers")) { sendDM() } else if
+        (window_path.startsWith("/list")){ sendItem() }
+        // sendItem();
     }
 });
 
@@ -18,6 +22,7 @@ function sendDM(){
     const message = messageBox.value;
     const theJson = JSON.stringify({'messageType': 'DirectMessage', 'from': userEmail, 
                             'to': toUser, 'message': message});
+    console.log(theJson)
     socket.send(theJson);
     toUserBox.value = "";
     messageBox.value = "";
@@ -82,6 +87,31 @@ function get_chat_history() {
     request.send();
 }
 
+function get_dms() {
+    const person = document.getElementById("user_email").value;
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            const messages = JSON.parse(this.response);
+            for (const message of messages) {
+                addDM(message);
+            }
+        }
+    };
+    request.open("GET", "/chat-"+person);
+    request.send();
+}
+
+function addDM(chat_msg) {
+
+    let chat_history = document.getElementById('chat_history');
+    
+    chat_history.innerHTML += "<b>" + chat_msg["from"] + ": </b>" + chat_msg["message"] + "</br>"
+
+    // chat_history.innerHTML += "<b>" + addItem['item-name'] + "</b>: " + addItem["quantity"] + "<br/>"+ "<img src='image/"+ addItem['img_name'] + "' class='post_images'> <br/>";
+    console.log(chat_msg);
+}
+
 
 // Called whenever data is received from the server over the WebSocket connection
 socket.onmessage = function (ws_message) {
@@ -92,10 +122,16 @@ socket.onmessage = function (ws_message) {
             addMessage(message);
             console.log("messae",message)
             break;
+        case 'DirectMessage':
+            addDM(message);
+            console.log("dm:", message);
+            break;
         default:
             console.log("received an invalid WS messageType");
     }
 }
+
+
 
 function welcome() {}
 
@@ -103,4 +139,10 @@ function displayList() {
     document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"
 
     get_chat_history()
+}
+
+
+function displayDMs(){
+
+    get_dms()
 }

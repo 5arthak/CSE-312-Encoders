@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
 </head>
-<!-- <body onload="welcome();"> -->
+<body onload="displayDMs();">
 <div class="responsiveBorderContainer1">
     <nav class="navbar">
         <div class="logo"><a href="/">Encoder's List</a></div>
@@ -41,9 +41,16 @@
     <button onclick="sendDM()">Send Private Message</button>
     <br>
 
+    <h2>Messages:</h2> </br>
+    <div id="chat_history"></div>
+    <!-- {{loop_msgs}}
+        {{sent_by}}: {{message}}
+        </br>
+    {{end_loop_msgs}} -->
+
     <h2>Online Users</h2>
     {{loop}}
-        <a href="/chat">{{email}}({{pronouns}})</a>
+        <a href="/onlineUsers">{{email}}({{pronouns}})</a>
         </br>
     {{end_loop}}
     <br>

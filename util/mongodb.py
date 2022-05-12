@@ -24,28 +24,32 @@ def add_message(username: str, chat_message: str, sent_by: str):
 
     get_user = users_messages.find_one({"username": username}, {"_id": 0})
 
+    print("db add msg:", msg_dict, get_user, flush=True)
+
     if not get_user:
-        users_messages.insert_one({"username": username, "messages": list(msg_dict)})
+        users_messages.insert_one({"username": username, "messages": [msg_dict]})
 
     else:
         user_msgs = get_user.get("messages", [])
         user_msgs.append(msg_dict)
+        print("updated", user_msgs, flush=True)
 
-        users_messages.update_one({"username": username}, {'set': {"messages": user_msgs}})
-
+        users_messages.update_one({"username": username}, {'$set': {"messages": user_msgs}})
 
     return
 
 def get_user_messages(username: str):
     '''gets messages of the given username'''
 
+    print("fetching user msgs from db of :", username, flush=True)
+
     get_user = users_messages.find_one({"username": username}, {"_id": 0})
 
     if get_user:
-        user_msgs = get_user.get("messsages", [])
-        return list(user_msgs)
+        user_msgs = get_user.get("messages", [])
+        return [user_msgs]
 
-    return list()
+    return []
 
 
 # MongoDB for chat comments featuring username
