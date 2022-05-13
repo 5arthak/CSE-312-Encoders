@@ -120,7 +120,10 @@ socket.onmessage = function (ws_message) {
             console.log("messae",message)
             break;
         case 'DirectMessage':
-            alert("User " + message["from"] + " sent: " + message["message"]);
+            // window.confirm("User " + message["from"] + " sent: " + message["message"] +"\n Click ok to reply");
+            if (window.confirm("User " + message["from"] + " sent: " + message["message"] +"\nClick ok to see")){
+                window.location.href='/onlineUsers';
+            }
             addDM(message);
             console.log("dm:", message);
             break;
