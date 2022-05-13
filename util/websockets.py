@@ -207,6 +207,6 @@ def get_chatOf(request, handler):
 
     print("users:", get_username, user_chats[0], flush=True)
 
-    response = generate_response(json.dumps(user_chats).encode(), "application/json; charset=utf-8", "200 OK")
+    response = generate_response(json.dumps(user_chats[0]).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)
 
