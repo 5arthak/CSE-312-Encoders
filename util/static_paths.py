@@ -67,7 +67,7 @@ def render_list(request, handler):
     path_prefix = '/list'
     list_name = request.path[request.path.find(path_prefix) + len(path_prefix):]
     list_name = list_name.replace("/", "") #Security measurement
-    # list_name = secure_html(list_name)
+    print(list_name)
     if db.not_a_list(list_name):
         response = redirect_response("/index", "302 Found")
         handler.request.sendall(response)

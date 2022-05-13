@@ -4,16 +4,18 @@ from util.response import redirect_response, generate_response
 from util.router import Route
 import util.mongodb as db
 from util.security import secure_html
-import sys
+import json
 
 
 
 def add_paths(router):
+    # Form paths
     router.add_route(Route("POST", "/image-upload", image_upload))
-    # router.add_route(Route("POST", "/newList-upload", upload_list))
     router.add_route(Route("POST", "/create-new-list", create_new_list))
-    # router.add_route(Route("POST", "/upload_static_file", upload_file))
 
+    # Database path
+    router.add_route(Route("GET", "/list-.", chat_history))
+    router.add_route(Route("GET","/chat-.", get_chat_of))
     
 # Parser for creating new grocery list
 def create_new_list(request, handler):
@@ -37,8 +39,7 @@ def new_list_parser(request, boundary):
         if name == '"new_list_name"':
             list_name = body.decode()
             list_name = secure_html(list_name)
-            
-            # print("list_name", list_name)
+            list_name= list_name.replace(" ", "_")
             db.create_new_list(list_name)
     return True
 
@@ -71,38 +72,26 @@ def image_parser(request, boundary):
     return True
 
 
-# Parser for uploading list 
-# def upload_list(request, handler):
-#     content_type = request.headers.get('Content-Type')
-#     prefix = 'multipart/form-data; boundary='
-#     boundary = "--" + content_type[len(prefix):]
+def chat_history(request, handler):
+    history = [{"item-name": "peanut", "quantity": 1}, 
+               {"item-name": "walnut", "quantity": 3}]
+    prefix = "/list-"
+    get_list_name = str(request.path[len(prefix):])
+    history = db.retrieve_items(get_list_name)
+    response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
 
-#     if not list_parser(request.body, boundary.encode()):
-#         response = generate_response(b"Requested rejected", "text/plain; charset=utf-8", "403 Forbidden")
-#         handler.request.sendall(response)
-#         return
-#     response = redirect_response("/createList") 
-#     handler.request.sendall(response)
 
-# def list_parser(request, boundary): # "item", "name", "quantity"
-#     content = request.split(boundary)
-#     grocery_list = {}
-#     for x in range(1, len(content)-1):
-#         raw_header = (content[x][2:]).split(b'\r\n\r\n')
-#         header = (parse_headers(raw_header[0]))
-#         name = header[b'Content-Disposition'].split(b';')[1].split(b'=')[1].decode()
-#         body = raw_header[1]
-#         if name == '"item"':
-#             grocery_list["item_name"] = secure_html(body.decode()).strip()
-#         elif name == 'item_upload':
-#             grocery_list["item_image"] = parse_image(body)
-#         elif name == '"quantity"':
-#             grocery_list["quantity"] = secure_html(body.decode()).strip()
-#     item_name = grocery_list.get("item_name","")
-#     item_image = grocery_list.get("item_image","")
-#     quantity = grocery_list.get("quantity","0")
-#     db.add_item(item_image, item_name, quantity)
-#     return True
+def get_chat_of(request, handler):
+    prefix = "/chat-"
+    get_username = str(request.path[len(prefix): ])
+    user_chats = db.get_user_messages(get_username)
+
+    print("users:", get_username, user_chats[0], flush=True)
+
+    response = generate_response(json.dumps(user_chats[0]).encode(), "application/json; charset=utf-8", "200 OK")
+    handler.request.sendall(response)
+
             
 
 def parse_headers(headers_raw: bytes):

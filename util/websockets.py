@@ -13,11 +13,6 @@ import util.mongodb as db
 
 def add_paths(router):
     router.add_route(Route("GET", "/websocket", websocket))
-    router.add_route(Route("GET", "/list-.", chat_history))
-
-    router.add_route(Route("GET","/chat-.", get_chatOf))
-
-    # router.add_route(Route("GET", "/"))
 
 
 def websocket(request, handler):
@@ -30,7 +25,6 @@ def websocket(request, handler):
     handler.request.sendall(response)
     user_auth_token = get_auth_token(request)
     username = db.get_email_from_token(user_auth_token)[0]['email']
-    print("username", username, flush=True)
     MyTCPHandler.ws_connections[username] = handler
     while True:
         ws_frame_raw = handler.request.recv(1024)
@@ -71,9 +65,7 @@ def websocket(request, handler):
                     image_data = base64.b64decode(image_data)
                     payload_decoded = json.loads(payload_decoded)
                     msg_type = payload_decoded["messageType"]
-                    img_name = parse_image(image_data)   
-                    # print(img_name)
-                    # print("payload_decoded", payload_decoded, flush=True)
+                    img_name = parse_image(image_data)
                     if msg_type == "addItem":
                         payload_decoded['item-name'] = secure_html(payload_decoded['item-name'])
                         list_name = payload_decoded.get('list_name')
@@ -90,31 +82,17 @@ def websocket(request, handler):
                         payload_decoded['to'] = secure_html(payload_decoded['to']) # receiver
                         payload_decoded['from'] = secure_html(payload_decoded['from']) # sent from
                         payload_decoded['message'] = secure_html(payload_decoded['message']) # the msg
-# {'messageType': 'DirectMessage', 'from': 'hi@123.com', 'to': 'koreyliu@buffalo.edu', 'message': 'hello!'}
-                        # print(payload_decoded,flush=True)
                         to_user, from_user, msg = payload_decoded['to'], payload_decoded["from"], payload_decoded["message"]
                         print("info:", to_user, from_user, msg, flush=True)
                         db.add_message(to_user, msg, from_user)
-                        db.add_message(from_user, msg, from_user)
-                        # would then use db.get_user_messages to get user's messages
-
+                        # db.add_message(from_user, msg, from_user)
                         outgoing_payload = json.dumps(payload_decoded)
                         outgoing_payload_len = len(outgoing_payload)
-                        # Create outgoing package
+                        # Create outgoing package and send to receiver
                         outgoing_encoded = create_outgoing_payload(outgoing_payload_len, outgoing_payload)
-                        print("ws to send:", outgoing_encoded, flush=True)
-
-                        print("tcps:", MyTCPHandler.ws_connections,flush=True)
-                        tcps_to_send = [MyTCPHandler.ws_connections[to_user], 
-                                        MyTCPHandler.ws_connections[from_user]]
-
-                        # send_to_tcp = MyTCPHandler.ws_connections[to_user]
-                        # send_to_tcp.request.sendall(outgoing_encoded)
-                        for tcp in tcps_to_send:
-                            tcp.request.sendall(outgoing_encoded)
+                        MyTCPHandler.ws_connections[to_user].request.sendall(outgoing_encoded)
         except:
             pass
-
 
 
 
@@ -187,26 +165,3 @@ def create_outgoing_payload(outgoing_payload_len, outgoing_payload):
         outgoing_bytes.append(utf)
     outgoing_encoded = bytes(outgoing_bytes)
     return outgoing_encoded
-
-
-def chat_history(request, handler):
-    history = [{"item-name": "peanut", "quantity": 1}, 
-               {"item-name": "walnut", "quantity": 3}]
-    prefix = "/list-"
-    get_list_name = str(request.path[len(prefix):])
-    history = db.retrieve_items(get_list_name)
-    # print("histroy", history, flush=True)
-    response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
-    handler.request.sendall(response)
-
-
-def get_chatOf(request, handler):
-    prefix = "/chat-"
-    get_username = str(request.path[len(prefix): ])
-    user_chats = db.get_user_messages(get_username)
-
-    print("users:", get_username, user_chats[0], flush=True)
-
-    response = generate_response(json.dumps(user_chats[0]).encode(), "application/json; charset=utf-8", "200 OK")
-    handler.request.sendall(response)
-

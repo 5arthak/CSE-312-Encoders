@@ -11,7 +11,6 @@ import util.websockets as ws
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
     ws_connections = {}
-    ws_other = {}
     def __init__(self, request, client_address, server):
         self.router = Router()
         ws.add_paths(self.router)

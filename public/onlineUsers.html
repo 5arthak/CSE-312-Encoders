@@ -33,7 +33,7 @@
     <h1>{{user_email}} (You) </h1>
     <input id="user_email" value="{{user_email}}" hidden>
     <label for="to-user">To User: </label>
-    <input id="to-user" type="text" name="to-user">
+    <input id="to-user" type="text" placeholder="Email of user" name="to-user">
     <br>
     <label for="pm">Message: </label>
     <input id="dm" type="test" name="dm">
@@ -41,23 +41,24 @@
     <button onclick="sendDM()">Send Private Message</button>
     <br>
 
-    <h2>Messages:</h2> </br>
+    <h2>Private Messages:</h2> </br>
     <div id="chat_history"></div>
-    <!-- {{loop_msgs}}
-        {{sent_by}}: {{message}}
-        </br>
-    {{end_loop_msgs}} -->
-
-
 
     <!-- Display online users -->
     <h2>Online Users</h2>
     {{loop}}
-        <a href="/onlineUsers">{{email}}({{pronouns}})</a>
+        {{email}}({{pronouns}})
         </br>
     {{end_loop}}
     <br>
-    <p>
+    <br>
+    <h2>Settings: Change/Set Your Pronouns</h2>
+    <form action="/pronouns" id="pronouns" method="post" enctype="multipart/form-data">
+        <label for="pronouns">Pronouns: </label><br>
+        <input id="pronouns" name="pronouns" placeholder = "{{your_pronouns}}"" type="text" required>
+        <input type="submit" value="Update">
+        <br>
+    </form>
 </div>
 <script src="functions.js"></script>
 <br>

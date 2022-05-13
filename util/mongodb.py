@@ -33,15 +33,11 @@ def add_message(username: str, chat_message: str, sent_by: str):
 
 def get_user_messages(username: str):
     '''gets messages of the given username'''
-
     # print("fetching user msgs from db of :", username, flush=True)
-
     get_user = users_messages.find_one({"username": username}, {"_id": 0})
-
     if get_user:
         user_msgs = get_user.get("messages", [])
         return [user_msgs]
-
     return []
 
 
