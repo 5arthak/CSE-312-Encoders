@@ -38,7 +38,7 @@ def new_list_parser(request, boundary):
             list_name = body.decode()
             list_name = secure_html(list_name)
             
-            print("list_name", list_name)
+            # print("list_name", list_name)
             db.create_new_list(list_name)
     return True
 
@@ -115,7 +115,6 @@ def parse_headers(headers_raw: bytes):
     
 
 def parse_image(image_bytes):
-    print(image_bytes)
     img_name = "image" + str(random.randint(1, 1000000)) + ".jpg"
     with open("public/image/" + img_name, "wb") as output_file:
         output_file.write(image_bytes)

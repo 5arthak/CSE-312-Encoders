@@ -93,6 +93,7 @@ function get_dms() {
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             const messages = JSON.parse(this.response);
+            console.log("Messages: ", messages)
             for (const message of messages) {
                 addDM(message);
             }
@@ -103,12 +104,8 @@ function get_dms() {
 }
 
 function addDM(chat_msg) {
-
     let chat_history = document.getElementById('chat_history');
-    
     chat_history.innerHTML += "<b>" + chat_msg["from"] + ": </b>" + chat_msg["message"] + "</br>"
-
-    // chat_history.innerHTML += "<b>" + addItem['item-name'] + "</b>: " + addItem["quantity"] + "<br/>"+ "<img src='image/"+ addItem['img_name'] + "' class='post_images'> <br/>";
     console.log(chat_msg);
 }
 
@@ -123,6 +120,7 @@ socket.onmessage = function (ws_message) {
             console.log("messae",message)
             break;
         case 'DirectMessage':
+            alert("User " + message["from"] + " sent: " + message["message"]);
             addDM(message);
             console.log("dm:", message);
             break;

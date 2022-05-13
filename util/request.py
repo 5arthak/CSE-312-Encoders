@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
 
 def _parse_submission(request: Request):
-    print("parsing",flush=True)
+    # print("parsing",flush=True)
     body = request.allparsed()["_BODY"]
 
     boundary = request.allparsed()["Content-Type"].split("boundary=")[1].encode()
@@ -104,8 +104,6 @@ def _parse_submission(request: Request):
         #print("content",content,flush=True)
         #print("parts adding", parts, flush=True)
 
-    print()
     #print("parts" ,parts,flush=True)
-    print()
 
     return parts

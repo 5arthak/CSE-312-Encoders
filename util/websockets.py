@@ -29,8 +29,8 @@ def websocket(request, handler):
                                 [("Sec-WebSocket-Accept", accept), ("Connection", "Upgrade"), ("Upgrade", "websocket")])
     handler.request.sendall(response)
     user_auth_token = get_auth_token(request)
-    username = db.user_token(user_auth_token)[0]['email']
-    print(username, flush=True)
+    username = db.get_email_from_token(user_auth_token)[0]['email']
+    print("username", username, flush=True)
     MyTCPHandler.ws_connections[username] = handler
     while True:
         ws_frame_raw = handler.request.recv(1024)
@@ -105,11 +105,6 @@ def websocket(request, handler):
                         print("ws to send:", outgoing_encoded, flush=True)
 
                         print("tcps:", MyTCPHandler.ws_connections,flush=True)
-                        # tcps are dicts from the user_token -> username, 
-                        # '683815602': <__main__.MyTCPHandler object at 0x7fc1224fc9a0>, '660810313': <__main__.MyTCPHandler object at 0x7fc1224fe1a0>
-                        # need to get token given username and send it
-                        # to_user and from_user are strings of the username
-                        
                         tcps_to_send = [MyTCPHandler.ws_connections[to_user], 
                                         MyTCPHandler.ws_connections[from_user]]
 
@@ -200,20 +195,17 @@ def chat_history(request, handler):
     prefix = "/list-"
     get_list_name = str(request.path[len(prefix):])
     history = db.retrieve_items(get_list_name)
-    print("histroy", history, flush=True)
+    # print("histroy", history, flush=True)
     response = generate_response(json.dumps(history).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)
 
 
 def get_chatOf(request, handler):
-
     prefix = "/chat-"
-
     get_username = str(request.path[len(prefix): ])
-
     user_chats = db.get_user_messages(get_username)
 
-    print("users:", get_username, user_chats, flush=True)
+    print("users:", get_username, user_chats[0], flush=True)
 
     response = generate_response(json.dumps(user_chats).encode(), "application/json; charset=utf-8", "200 OK")
     handler.request.sendall(response)

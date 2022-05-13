@@ -19,29 +19,22 @@ users_messages = db["messages_of_user"]
 
 def add_message(username: str, chat_message: str, sent_by: str):
     ''' add a message to username's chat db'''
-
-    msg_dict = {"message": chat_message, "sent_by": sent_by}
-
+    msg_dict = {"message": chat_message, "from": sent_by}
     get_user = users_messages.find_one({"username": username}, {"_id": 0})
-
-    print("db add msg:", msg_dict, get_user, flush=True)
-
+    # print("db add msg:", msg_dict, get_user, flush=True)
     if not get_user:
         users_messages.insert_one({"username": username, "messages": [msg_dict]})
-
     else:
         user_msgs = get_user.get("messages", [])
         user_msgs.append(msg_dict)
-        print("updated", user_msgs, flush=True)
-
+        # print("updated", user_msgs, flush=True)
         users_messages.update_one({"username": username}, {'$set': {"messages": user_msgs}})
-
     return
 
 def get_user_messages(username: str):
     '''gets messages of the given username'''
 
-    print("fetching user msgs from db of :", username, flush=True)
+    # print("fetching user msgs from db of :", username, flush=True)
 
     get_user = users_messages.find_one({"username": username}, {"_id": 0})
 
@@ -183,3 +176,11 @@ def user_token(token):
         return user_info
     return []
 
+def get_email_from_token(token):
+    # Return user info from auth token
+    hash_token = sha256(str(token).encode()).hexdigest()
+    user_info = users_collection.find({"auth_token": hash_token}, {"_id": 0, 'email': 1})
+    user_info = list(user_info)
+    if len(user_info) == 1:
+        return user_info
+    return None
