@@ -29,7 +29,9 @@
         </div>
         </ul>
     </nav>
+    <div class="page__content">
     <h2>Uploads Deals</h2>
+    <p>Sharing is caring. Every penny matters!</p>
     
     <form action="/image-upload" id="image-form" method="post" enctype="multipart/form-data">
         <label for="image-form-comment">Details: </label>
@@ -39,13 +41,14 @@
         <input id="form-file" type="file" name="upload">
         <input type="submit" value="Post">
     </form>
-
+    <hr>
     {{loop}}
     <img src="image/{{img_name}}" class="post_images"/>
     {{comment}} </br>
     {{end_loop}}
     
     <br/>
+    </div>
 
 </div>
 <script src="functions.js"></script>

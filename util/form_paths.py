@@ -9,10 +9,10 @@ import json
 
 
 def add_paths(router):
+    
     # Form paths
     router.add_route(Route("POST", "/image-upload", image_upload))
     router.add_route(Route("POST", "/create-new-list", create_new_list))
-
     # Database path
     router.add_route(Route("GET", "/list-.", chat_history))
     router.add_route(Route("GET","/chat-.", get_chat_of))
@@ -29,6 +29,7 @@ def create_new_list(request, handler):
     response = redirect_response("/index") 
     handler.request.sendall(response)
 
+# Parsing the request body for the new list name.
 def new_list_parser(request, boundary):
     content = request.split(boundary)
     for x in range(1, len(content)-1):
@@ -56,6 +57,7 @@ def image_upload(request, handler):
     response = redirect_response("/addDeals") 
     handler.request.sendall(response)
 
+# Parsing the request body for the image upload.
 def image_parser(request, boundary):
     content = request.split(boundary)
     comment = {}

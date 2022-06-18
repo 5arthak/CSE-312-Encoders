@@ -23,39 +23,34 @@
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-        <li><a href="/index">Home</a></li>
-        <li><a href="/addDeals">Add Deals</a></li>
-        <li><a href="/onlineUsers">Online Users</a></li>
-        <li><a href="/logout">Logout</a></li>
+            <li><a href="/index">Home</a></li>
+            <li><a href="/addDeals">Add Deals</a></li>
+            <li><a href="/onlineUsers">Online Users</a></li>
+            <li><a href="/logout">Logout</a></li>
         </div>
         </ul>
     </nav>
-    <form action="/create-new-list" method="post" enctype="multipart/form-data">
-        <br>
-        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="new_list_name">List Name: </label><br>
-        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="new_list_name" name="new_list_name" placeholder = "Enter List Name" type="text" required>
-        <br><br>
-        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input type="submit" value="Create New Grocery List">
-        <p>"List name cannot include /, &, <, and ></p>
-        <br> <br>
-    </form>
-    <!-- <label for="chat-comment">Chat: </label>
-    <input id="chat-comment" type="text" name="comment">
-    <button onclick="sendMessage()">Send</button> -->
-    <div id="list_chat"></div>
+    <div class="page__content">
+        <form action="/create-new-list" method="post" enctype="multipart/form-data">
+            <h2>Create New Grocery List:</h2>
 
-    <!-- <a href="/index"><button>Create New Grocery List</button></a> -->
-    <h1 class = "header">Saved Lists:</h1>
-    <p id="paragraph">
-        Click on the lists to expand / view:
-    </p>
+            <!-- <label for="new_list_name">List Name: </label><br> -->
+            <input id="new_list_name" name="new_list_name" placeholder = "Enter List Name" type="text" required>
+            <input id="new_list_btn" type="submit" value="Create">
+            <p>*List name cannot include /, &, <, and ></p>
+        </form>
 
-    {{loop}}
-        <a href="/list{{list_name}}">{{list_name}}</a>
-        <br> <br>
-    {{end_loop}}
+        <hr>
+        <h1>Saved Lists:</h1>
+        <p>Click on the lists to expand / view:</p>
 
+        {{loop}}
+            <a href="/list{{list_name}}">{{list_name}}</a>
+            <br> <br>
+        {{end_loop}}
+    </div>
 </div>
+
 <script src="functions.js"></script>
 <br>
 </body>

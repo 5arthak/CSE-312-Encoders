@@ -30,25 +30,31 @@
         </div>
         </ul>
     </nav>
-    <p id="pp"></p>
+    <div class="page__content">
+        <h2>Add items to list! </h2>
+        <p>Must include all <em>THREE fields</em></p>
+        <p>List will be updated in real time through WebSocket.</p>
 
-    <input id="list_name" value="{{list_name}}" hidden>
-    <label for="item-name">Item Name: </label>
-    <input id="item-name" type="text" name="item-name">
-    <label for="quantity">Quantity: </label>
-    <input id="quantity" type="number" name="quantity">
+        <input id="list_name" value="{{list_name}}" hidden>
+        <label for="item-name">Item Name: </label>
+        <input id="item-name" type="text" name="item-name">
+        <label for="quantity">Quantity: </label>
+        <input id="quantity" type="number" name="quantity">
 
-    <br>
-    <label for="item-image">Item Image:</label>
-    <input id="item-image" type="file" name="item-image">
+        <br>
+        <label for="item-image">Item Image:</label>
+        <input id="item-image" type="file" name="item-image">
 
-    <button onclick="sendItem()">Add Item</button>
-    <br/>
-    <div id="items"></div>
+        <button onclick="sendItem()">Add Item</button>
+        <br/>
+        <hr>
+        <div id="items"></div>
 
 
-    {{loop}}{{empty}}{{end_loop}}
+        {{loop}}{{empty}}{{end_loop}}
     </div>
+</div>
+
 <script src="functions.js"></script>
 </body>
 </html>

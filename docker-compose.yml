@@ -4,6 +4,7 @@ services:
     image: mongo:4.2.5
   app:
     build: .
+    # image: public.ecr.aws/d4h2y0a4/grocery-app:latest
     restart: always
     environment:
       WAIT_HOSTS: mongo:27017

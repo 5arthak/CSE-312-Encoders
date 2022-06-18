@@ -10,40 +10,53 @@
     <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet"> 
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Fjalla+One&family=Lato:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body onload="welcome();">
-<div class="responsiveBorderContainer1">
-    <nav class="navbar">
-        <div class="logo"><a href="/">Encoder's List</a></div>
-        <!-- NAVIGATION MENU -->
-        <ul class="nav-links">
-        <!-- USING CHECKBOX HACK -->
-        <!-- <input type="checkbox" id="checkbox_toggle" />
-        <label for="checkbox_toggle" class="hamburger">&#9776;</label> -->
-        </ul>
-    </nav>
-    <h2 class="header">Login form:</h2>
-    <center>
-        <div class="register">
-        <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
-            <br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="email">Email: </label><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="email" name="email" placeholder = "Enter Email" type="email" required>
-            <br/><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<label for="pwd">Password: </label><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input id="pwd" name="pwd" placeholder = "Enter Password" type="password" required>
-            <br><br>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input class = "button" type="submit" value="Login">
-            <br> <br>
-        </form>
+<div class="login__container">
+    <div class="register">
+        <h1 class='login_h1'><a href="/">Encoder's List</a></h1>
+        <h2>Login with Demo Users:</h2>
+        <div class="demo__users">
+            <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+                <input class="input-field" id="email" name="email" placeholder = "Enter Email" type="email" value="demo@user1.com" hidden>
+                <input class="input-field" id="pwd" name="pwd" placeholder = "Enter Password" type="password" value="P@ssword10" hidden>
+                <input class = "user__button" type="submit" value="User1">
+            </form>
+            <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+                <input class="input-field" id="email" name="email" placeholder = "Enter Email" type="email" value="demo@user2.com" hidden>
+                <input class="input-field" id="pwd" name="pwd" placeholder = "Enter Password" type="password" value="P@ssword10" hidden>
+                <input class = "user__button" type="submit" value="User2">
+            </form>
+            <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+                <input class="input-field" id="email" name="email" placeholder = "Enter Email" type="email" value="demo@user3.com" hidden>
+                <input class="input-field" id="pwd" name="pwd" placeholder = "Enter Password" type="password" value="P@ssword10" hidden>
+                <input class = "user__button" type="submit" value="User3">
+            </form>
+            <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+                <input class="input-field" id="email" name="email" placeholder = "Enter Email" type="email" value="demo@user4.com" hidden>
+                <input class="input-field" id="pwd" name="pwd" placeholder = "Enter Password" type="password" value="P@ssword10" hidden>
+                <input class = "user__button" type="submit" value="User4">
+            </form>
         </div>
-    </center>
-    <br/>
-   <br> 
-   <center><a href = "/register"><button class = "button" onclick="sendMessage()">New User? Register!</button></a></center>
-    
-    <div id="chat"></div>
+
+        <h2 class='login_h2'>Welcome Back</h2>
+        <form action="/login-form" id="register-form" method="post" enctype="multipart/form-data">
+            <div className="icon__inside">
+                <i class="fa fa-envelope icon"> </i>
+                <input class="input-field" id="email" name="email" placeholder = "Enter Email" type="email" required>
+            </div>
+            <div className="icon__inside">
+                <i class="fa fa-key icon"> </i>
+                <input class="input-field" id="pwd" name="pwd" placeholder = "Enter Password" type="password" required>
+            </div>
+            <input class = "login__button" type="submit" value="Login">
+        </form>
+        <a href = "/register"><button class = "login__button">New User? Register!</button></a>
+
     </div>
+    
+</div>
 <script src="functions.js"></script>
 </body>
 </html>

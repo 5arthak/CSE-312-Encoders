@@ -137,8 +137,6 @@ socket.onmessage = function (ws_message) {
 function welcome() {}
 
 function displayList() {
-    document.getElementById("pp").innerHTML += "<br/>Add items and submit to save list!"
-
     get_chat_history()
 }
 

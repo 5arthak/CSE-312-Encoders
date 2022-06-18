@@ -29,6 +29,8 @@
         </div>
         </ul>
     </nav>
+
+    <div class="page__content">
     <h2>Send message</h2>
     <h1>{{user_email}} (You) </h1>
     <input id="user_email" value="{{user_email}}" hidden>
@@ -39,26 +41,30 @@
     <input id="dm" type="test" name="dm">
     <br>
     <button onclick="sendDM()">Send Private Message</button>
-    <br>
-
+    
+    <br>    
+    <hr>
     <h2>Private Messages:</h2> </br>
     <div id="chat_history"></div>
 
+    <hr>
     <!-- Display online users -->
-    <h2>Online Users</h2>
+    <h2>Online Users:</h2>
     {{loop}}
-        {{email}}({{pronouns}})
+        {{email}}
         </br>
     {{end_loop}}
     <br>
     <br>
+    <!-- <hr>
     <h2>Settings: Change/Set Your Pronouns</h2>
     <form action="/pronouns" id="pronouns" method="post" enctype="multipart/form-data">
         <label for="pronouns">Pronouns: </label><br>
-        <input id="pronouns" name="pronouns" placeholder = "{{your_pronouns}}"" type="text" required>
+        <input id="pronouns" name="pronouns" placeholder = "{{your_pronouns}}" type="text" required>
         <input type="submit" value="Update">
         <br>
-    </form>
+    </form> -->
+    </div>
 </div>
 <script src="functions.js"></script>
 <br>
