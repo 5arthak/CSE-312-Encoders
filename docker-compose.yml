@@ -3,12 +3,17 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "242:80"
+      - "80:80"
       - "443:443"
+    restart: unless-stopped
+    depends_on:
+      - certbot
     volumes:
-      - /srv/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - /srv/nginx/conf.d:/etc/nginx/conf.d
-      - /srv/nginx/cert:/etc/letsencrypt:ro
+      # - ./user-data/nginx.conf:/etc/nginx/nginx.conf # Uncomment to use custom nginx.conf
+      - ./user-data/conf.d:/etc/nginx/conf.d
+      - ./user-data/letsencrypt:/etc/letsencrypt:ro         # Certificates from certbot
+      - ./certbot-www:/var/www/certbot:ro  # ACME challange files when certbot renews
+      - ./nginx-certbot.conf:/etc/nginx/nginx-certbot.conf  # .well-known path for certbot
   mongo:
     image: mongo:4.2.5
   app:
@@ -19,3 +24,10 @@ services:
       WAIT_HOSTS: mongo:27017
     ports:
       - "8080:8080"
+  certbot:
+    build: certbot-img/.  # Build custom certbot image, auto-renew
+    container_name: certbot
+    restart: unless-stopped
+    volumes:
+      - ./user-data/letsencrypt:/etc/letsencrypt # Certificates
+      - ./certbot-www:/var/www/certbot           # For ACME challange
