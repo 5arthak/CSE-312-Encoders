@@ -1,11 +1,20 @@
+Purpose
+
 Problem: 
 - No time to restock pantries.
 - Grocery trips are an inconvience for those without cars.
 - Cordinating what to buy can be a hassel.
 
-Solution:
-- Create a shared grocery list with others to easily store and view what groceries to buy. 
+Technology Used: 
+Frontend: HTML, CSS, and Vanilla JS
+Backend: Python (WebSocket, SocketServer)
+Deploy: AWS EC2, AWS Route 53
 
+
+Our Solution:
+A sharable grocery list to easily store and view what groceries to buy. 
+
+Features:
 1. User Accounts with Secure Authentication
 2. Real time updated lists through WebSocket.
 3. View all online users and send private messages to them.
