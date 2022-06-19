@@ -32,7 +32,7 @@
     </nav>
     <div class="page__content">
         <h2>Add items to list! </h2>
-        <p>Must include all <em>THREE fields</em></p>
+        <p>Must include all <em>THREE fields.</em> (image must be in jpg)</p>
         <p>List will be updated in real time through WebSocket.</p>
 
         <input id="list_name" value="{{list_name}}" hidden>
@@ -44,10 +44,10 @@
         <br>
         <label for="item-image">Item Image:</label>
         <input id="item-image" type="file" name="item-image">
-
         <button onclick="sendItem()">Add Item</button>
-        <br/>
+        <p>(image must be in jpg)</p>
         <hr>
+        <br>
         <div id="items"></div>
 
 
