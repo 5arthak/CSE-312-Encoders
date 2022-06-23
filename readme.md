@@ -21,7 +21,9 @@ Features:
 
 ## Technology Used: 
 Frontend: HTML, CSS, and Vanilla JS
+
 Backend: Python (WebSocket, SocketServer), MongoDB
+
 Deploy: Docker, AWS EC2, AWS Route 53
 
 We took everything we learned from our Web App course to make this app. We decided not to use any framework such as Flask, Django, or React and built everything in pure Python and Javascript. We implemented low-level bit parsing and template engine in pure Python. This allowed us to have a better understanding of how these frameworks work and appreciate how they simplify web development for us.
