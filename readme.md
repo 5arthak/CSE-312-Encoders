@@ -1,7 +1,7 @@
 # Encoder's Grocery List
 Created by Sarthak, Korey, Mausam, and Michelle
 
-Check out our [demo](encoderlist.click)
+Check out our [demo](http://www.encoderlist.click)
 
 ## Inspiration
 As college students living off-campus, we need to make our food. Balancing school along with time to buy ingredients to make healthy meals can often be a hassle.
